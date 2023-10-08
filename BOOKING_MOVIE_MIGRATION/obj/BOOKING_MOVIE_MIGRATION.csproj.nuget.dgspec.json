@@ -1,0 +1,215 @@
+{
+  "format": 1,
+  "restore": {
+    "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/BOOKING_MOVIE_MIGRATION.csproj": {}
+  },
+  "projects": {
+    "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_CORE/BOOKING_MOVIE_CORE.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_CORE/BOOKING_MOVIE_CORE.csproj",
+        "projectName": "BOOKING_MOVIE_CORE",
+        "projectPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_CORE/BOOKING_MOVIE_CORE.csproj",
+        "packagesPath": "/Users/mb/.nuget/packages/",
+        "outputPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_CORE/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/mb/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ENTITY/BOOKING_MOVIE_ENTITY.csproj": {
+                "projectPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ENTITY/BOOKING_MOVIE_ENTITY.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Razor.Design": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Proxies": {
+              "target": "Package",
+              "version": "[2.1.0-preview1-final, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[2.2.6, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ENTITY/BOOKING_MOVIE_ENTITY.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ENTITY/BOOKING_MOVIE_ENTITY.csproj",
+        "projectName": "BOOKING_MOVIE_ENTITY",
+        "projectPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ENTITY/BOOKING_MOVIE_ENTITY.csproj",
+        "packagesPath": "/Users/mb/.nuget/packages/",
+        "outputPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ENTITY/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/mb/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Razor.Design": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    },
+    "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/BOOKING_MOVIE_MIGRATION.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/BOOKING_MOVIE_MIGRATION.csproj",
+        "projectName": "BOOKING_MOVIE_MIGRATION",
+        "projectPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/BOOKING_MOVIE_MIGRATION.csproj",
+        "packagesPath": "/Users/mb/.nuget/packages/",
+        "outputPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/mb/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {
+              "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_CORE/BOOKING_MOVIE_CORE.csproj": {
+                "projectPath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_CORE/BOOKING_MOVIE_CORE.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Razor.Design": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[2.2.6, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}
