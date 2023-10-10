@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "St5YbveevV1eaK8zxx+tagN4B9Xn4PKBUJQBjy7v+colOwPAmzhta/kjWDcSc6DBaK8/N6UIrNEdhACfox+rew==",
+  "dgSpecHash": "XWldghwg78N1Q9e9xc14Ds7st61/9AcfL46Js5W3E9cBBplgsJBg7Pwd4aPAW4OtaerKCgz1oFWFLDI3qCS3gw==",
   "success": true,
   "projectFilePath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_ADMIN/BOOKING_MOVIE_ADMIN.csproj",
   "expectedPackageFiles": [
@@ -40,7 +40,7 @@
     "/Users/mb/.nuget/packages/microsoft.aspnetcore.hosting.abstractions/2.2.0/microsoft.aspnetcore.hosting.abstractions.2.2.0.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnetcore.hosting.server.abstractions/2.2.0/microsoft.aspnetcore.hosting.server.abstractions.2.2.0.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnetcore.html.abstractions/2.2.0/microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
-    "/Users/mb/.nuget/packages/microsoft.aspnetcore.http/2.2.0/microsoft.aspnetcore.http.2.2.0.nupkg.sha512",
+    "/Users/mb/.nuget/packages/microsoft.aspnetcore.http/2.2.2/microsoft.aspnetcore.http.2.2.2.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnetcore.http.abstractions/2.2.0/microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnetcore.http.connections/1.1.0/microsoft.aspnetcore.http.connections.1.1.0.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnetcore.http.connections.common/1.1.0/microsoft.aspnetcore.http.connections.common.1.1.0.nupkg.sha512",

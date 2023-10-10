@@ -19,9 +19,9 @@
     },
     "BOOKING_MOVIE_ADMIN": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "api/values",
-      "applicationUrl": "https://localhost:50000;http://localhost:50000",
+      "applicationUrl": "http://localhost:9999",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

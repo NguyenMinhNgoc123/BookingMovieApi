@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using BOOKING_MOVIE_CORE;
+using BOOKING_MOVIE_CORE.Configurations;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -19,9 +21,10 @@ namespace BOOKING_MOVIE_ADMIN
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Cors.ConfigureServices(services);
+            Mvc.ConfigureServices(services, Configuration);
             DbContext.ConfigureServices(services, Configuration);
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            CoreDependenciesInjection.Inject(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
