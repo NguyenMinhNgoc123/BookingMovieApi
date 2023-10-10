@@ -1,4 +1,5 @@
 using System.Linq;
+using BOOKING_MOVIE_ENTITY.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -11,7 +12,7 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         }
         
         public virtual DbSet<User> User { get; set; }
-        
+
         public void ResetTracker()
         {
             var entries = this.ChangeTracker.Entries().ToList();
@@ -19,6 +20,11 @@ namespace BOOKING_MOVIE_ENTITY.Entities
             {
                 entry.State = EntityState.Detached;
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder = GlobalQueryFilter.BuildFillter(modelBuilder);
         }
     }
 }

@@ -15,18 +15,16 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CreatedBy = table.Column<string>(nullable: true),
-                    CreatedDate = table.Column<DateTime>(nullable: false),
                     Email = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     PasswordHash = table.Column<string>(nullable: true),
-                    Status = table.Column<string>(nullable: true),
-                    StaffRatingSalonBranchCurrentId = table.Column<long>(nullable: true),
                     PhotoId = table.Column<long>(nullable: true),
-                    SecurityStamp = table.Column<string>(nullable: true),
                     IsAdmin = table.Column<bool>(nullable: false),
-                    Type = table.Column<string>(nullable: true),
                     Mobile = table.Column<string>(nullable: true),
-                    IsSalonRootUser = table.Column<bool>(nullable: true)
+                    Created = table.Column<DateTime>(nullable: true),
+                    Status = table.Column<string>(type: "varchar(255)", nullable: true, defaultValue: "ENABLE"),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    UpdatedBy = table.Column<string>(type: "varchar(255)", nullable: true),
                 },
                 constraints: table =>
                 {

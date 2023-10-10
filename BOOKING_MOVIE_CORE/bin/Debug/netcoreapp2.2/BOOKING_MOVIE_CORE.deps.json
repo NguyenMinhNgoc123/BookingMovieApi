@@ -1,19 +1,28 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "6dfccd8ec3dfe31d2ca2017e8cb732f33ab51691"
+    "signature": "63579747b25e04db185335a08b53636e3ca99d66"
   },
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v2.2": {
       "BOOKING_MOVIE_CORE/1.0.0": {
         "dependencies": {
+          "BCrypt.Net": "0.1.0",
           "BOOKING_MOVIE_ENTITY": "1.0.0",
           "Microsoft.EntityFrameworkCore.Proxies": "2.1.0-preview1-final",
           "Pomelo.EntityFrameworkCore.MySql": "2.2.6"
         },
         "runtime": {
           "BOOKING_MOVIE_CORE.dll": {}
+        }
+      },
+      "BCrypt.Net/0.1.0": {
+        "runtime": {
+          "lib/net35/BCrypt.Net.dll": {
+            "assemblyVersion": "0.1.4141.31969",
+            "fileVersion": "0.1.0.0"
+          }
         }
       },
       "Castle.Core/4.2.1": {
@@ -162,6 +171,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BCrypt.Net/0.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sST2w361Dxt9GGMfpOTiK50wXGV64Ybb1hiX3xjEWnhVYZNF43NuySGwADJa7X1R+bA53NsFR+tuDxcYiJeIOA==",
+      "path": "bcrypt.net/0.1.0",
+      "hashPath": "bcrypt.net.0.1.0.nupkg.sha512"
     },
     "Castle.Core/4.2.1": {
       "type": "package",

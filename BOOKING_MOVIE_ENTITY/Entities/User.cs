@@ -1,15 +1,12 @@
 using System;
+using BOOKING_MOVIE_ENTITY.EntitieBases;
 using Newtonsoft.Json;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
 {
-    public class User
+    public class User : EntitieDate
     {
-        public long Id { get; set; }
-        
         public string CreatedBy { get; set; }
-        
-        public DateTime CreatedDate { get; set; }
         
         public string Email { get; set; }
         
@@ -22,14 +19,8 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         public long? PhotoId { get; set; }
         
-        public string SecurityStamp { get; set; }
-
         public Boolean IsAdmin { get; set; }
 
-        public string Type { get; set; }
-        
         public string Mobile { get; set; }
-
-        public bool? IsSalonRootUser { get; set; }
     }
 }

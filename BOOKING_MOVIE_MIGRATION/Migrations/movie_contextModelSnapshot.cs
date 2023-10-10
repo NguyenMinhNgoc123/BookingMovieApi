@@ -22,15 +22,11 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
-
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("Created");
 
                     b.Property<string>("Email");
 
                     b.Property<bool>("IsAdmin");
-
-                    b.Property<bool?>("IsSalonRootUser");
 
                     b.Property<string>("Mobile");
 
@@ -40,14 +36,14 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<long?>("PhotoId");
 
-                    b.Property<string>("SecurityStamp");
-
-                    b.Property<long?>("StaffRatingSalonBranchCurrentId");
-
                     b.Property<string>("Status");
+                    
+                    b.Property<DateTime>("Updated");
 
-                    b.Property<string>("Type");
+                    b.Property<string>("UpdatedBy");
 
+                    b.Property<string>("CreatedBy");
+                    
                     b.HasKey("Id");
 
                     b.ToTable("User");

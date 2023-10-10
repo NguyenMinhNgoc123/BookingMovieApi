@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5Qj0DSkuRwklcibY1Zn1Vo5VAl2yyWnJrBt43f5vbFwGo6pdyI9sce17ddZXnE0+ZC+tISemXJ5UxYBjLx1+NA==",
+  "dgSpecHash": "ZgM1GmJIzi0ay+C3W9zKZO3wfSI1EITD4cw74QVgFvi/9iIuRic8KzwZKaanptziLnPi3tGTXkTtzXmdWKu8xA==",
   "success": true,
   "projectFilePath": "/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/BOOKING_MOVIE_MIGRATION.csproj",
   "expectedPackageFiles": [
+    "/Users/mb/.nuget/packages/bcrypt.net/0.1.0/bcrypt.net.0.1.0.nupkg.sha512",
     "/Users/mb/.nuget/packages/castle.core/4.2.1/castle.core.4.2.1.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnet.webapi.client/5.2.6/microsoft.aspnet.webapi.client.5.2.6.nupkg.sha512",
     "/Users/mb/.nuget/packages/microsoft.aspnetcore/2.2.0/microsoft.aspnetcore.2.2.0.nupkg.sha512",
@@ -297,5 +298,16 @@
     "/Users/mb/.nuget/packages/system.xml.xpath/4.3.0/system.xml.xpath.4.3.0.nupkg.sha512",
     "/Users/mb/.nuget/packages/system.xml.xpath.xdocument/4.3.0/system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'BCrypt.Net 0.1.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.2'. This package may not be fully compatible with your project.",
+      "libraryId": "BCrypt.Net",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.2"
+      ]
+    }
+  ]
 }
