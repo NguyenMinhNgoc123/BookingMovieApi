@@ -1,0 +1,12 @@
+using BOOKING_MOVIE_ENTITY;
+using BOOKING_MOVIE_ENTITY.Entities;
+
+namespace BOOKING_MOVIE_CORE.Services
+{
+    public class VideoServices : GenericDomainService<Video>
+    {
+        public VideoServices(UnitOfWork unitOfWork) : base(unitOfWork)
+        {
+        }
+    }
+}
