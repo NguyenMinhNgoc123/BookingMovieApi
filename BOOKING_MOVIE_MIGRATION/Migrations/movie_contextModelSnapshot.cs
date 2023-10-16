@@ -206,6 +206,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.HasIndex("ActorId");
 
+                    b.HasIndex("MovieId");
+
                     b.ToTable("MovieActors");
                 });
 
@@ -260,6 +262,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.HasIndex("DirectorId");
 
+                    b.HasIndex("MovieId");
+
                     b.ToTable("MovieDirectors");
                 });
 
@@ -273,8 +277,6 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.Property<DateTime?>("Created");
 
                     b.Property<string>("CreatedBy");
-
-                    b.Property<long>("InvoiceId");
 
                     b.Property<string>("Name");
 
@@ -447,6 +449,11 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                         .WithMany()
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Movie")
+                        .WithMany("MovieActors")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BOOKING_MOVIE_ENTITY.Entities.MovieCategories", b =>
@@ -467,6 +474,11 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Director", "Director")
                         .WithMany()
                         .HasForeignKey("DirectorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Movie")
+                        .WithMany("MovieDirectors")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

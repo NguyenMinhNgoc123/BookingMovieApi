@@ -30,7 +30,7 @@ namespace BOOKING_MOVIE_ADMIN
                 services, Configuration,
                 typeof(UserValidation)
             );
-            
+            Authorization.ConfigureServices(services);
             CoreDependenciesInjection.Inject(services);
         }
 

@@ -12,7 +12,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Policy = "UserPolicy")]
+    [Authorize(Policy = "User")]
+    [Authorize(Policy = "Customer")]
     public class UsersController : movieControllerBase
     {
         public readonly UnitOfWork _unitOfWork;
@@ -37,6 +38,26 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return OkList(data);
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetUserDetail([FromRoute] long id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var data = _user.GetAll()
+                .Where(e => e.Id == id)
+                .FirstOrDefault();
+
+            if (data == null)
+            {
+                return BadRequest("USER_NOT_EXIST");
+            }
+            
+            return Ok(data);
+        }
+        
         [HttpPost]
         public IActionResult CreateUser([FromBody] UserPasswordValue body)
         {
@@ -61,6 +82,43 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             using (var transaction = _unitOfWork.BeginTransaction())
             {
                 _user.Add(body);
+
+                transaction.Commit();
+            }
+
+            return Ok(body);
+        }
+        
+        [HttpPut("{id}")]
+        public IActionResult UpdateUser([FromRoute] long id, [FromBody] UserPasswordValue body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var userExist = _user.GetAll()
+                .Where(o => o.Id == id)
+                .Where(o => o.Email == body.Email)
+                .FirstOrDefault();
+
+            if (userExist == null)
+            {
+                return BadRequest("USER_NOT_EXIST");
+            }
+
+            body.Email = userExist.Email;
+            body.CreatedBy = "";
+            body.Status = OBJECT_STATUS.ENABLE;
+            
+            if (!string.IsNullOrEmpty(body.Password))
+            {
+                body.PasswordHash = _auth.BCryptPasswordEncoder(body.Password);
+            }
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _user.Update(body);
 
                 transaction.Commit();
             }

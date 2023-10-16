@@ -16,12 +16,12 @@ namespace BOOKING_MOVIE_CORE.Configurations
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("UserPolicy", policy =>
+                options.AddPolicy("User", policy =>
                 {
                     policy.RequireClaim("userId"); 
                 });
 
-                options.AddPolicy("CustomerPolicy", policy =>
+                options.AddPolicy("Customer", policy =>
                 {
                     policy.RequireClaim("customerId");
                 });

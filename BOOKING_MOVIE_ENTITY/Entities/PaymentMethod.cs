@@ -7,7 +7,5 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public string Name { get; set; }
         
         public string Code { get; set; }
-        
-        public long InvoiceId { get; set; }
     }
 }

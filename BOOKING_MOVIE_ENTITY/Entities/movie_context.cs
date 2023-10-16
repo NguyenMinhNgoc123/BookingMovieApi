@@ -27,6 +27,13 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual DbSet<Video> Video { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethod { get; set; }
         public virtual DbSet<InvoicePayment> InvoicePayment { get; set; }
+        public virtual DbSet<Cinema> Cinema { get; set; }
+        public virtual DbSet<MovieCinema> MovieCinema { get; set; }
+        public virtual DbSet<MovieDateSetting> MovieDateSettings { get; set; }
+        public virtual DbSet<MovieRoom> MovieRooms { get; set; }
+        public virtual DbSet<MovieTimeSetting> MovieTimeSetting { get; set; }
+        public virtual DbSet<Room> Room { get; set; }
+
 
         public void ResetTracker()
         {

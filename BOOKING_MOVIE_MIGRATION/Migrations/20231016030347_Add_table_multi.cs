@@ -138,7 +138,6 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     Status = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Code = table.Column<string>(nullable: true),
-                    InvoiceId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {

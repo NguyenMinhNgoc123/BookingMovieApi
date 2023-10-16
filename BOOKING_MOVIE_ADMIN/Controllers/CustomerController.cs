@@ -60,7 +60,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpGet("{id}")]
-        [Authorize(Policy = "CustomerPolicy")]
+        [Authorize(Policy = "Customer")]
         public IActionResult GetCustomer([FromRoute] long id)
         {
             if (!ModelState.IsValid)
@@ -82,7 +82,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpDelete("{id}")]
-        [Authorize(Policy = "CustomerPolicy")]
+        [Authorize(Policy = "Customer")]
         public IActionResult DeleteCustomer([FromRoute] long id)
         {
             if (!ModelState.IsValid)
