@@ -13688,6 +13688,7 @@
       "Microsoft.AspNetCore.Razor.Design >= 2.2.0",
       "Microsoft.EntityFrameworkCore.Proxies >= 2.1.0-preview1-final",
       "Microsoft.Extensions.Configuration >= 2.2.0",
+      "Microsoft.Extensions.Logging >= 2.2.0",
       "Microsoft.NETCore.App >= 2.2.0",
       "Pomelo.EntityFrameworkCore.MySql >= 2.2.6"
     ]
@@ -13762,6 +13763,10 @@
             "version": "[2.1.0-preview1-final, )"
           },
           "Microsoft.Extensions.Configuration": {
+            "target": "Package",
+            "version": "[2.2.0, )"
+          },
+          "Microsoft.Extensions.Logging": {
             "target": "Package",
             "version": "[2.2.0, )"
           },

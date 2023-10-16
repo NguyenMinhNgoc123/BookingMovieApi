@@ -9,6 +9,7 @@ namespace BOOKING_MOVIE_CORE
         {
             services.AddScoped<UserServices>();
             services.AddScoped<AuthServices>();
+            services.AddScoped<CustomerServices>();
         }
 
     }

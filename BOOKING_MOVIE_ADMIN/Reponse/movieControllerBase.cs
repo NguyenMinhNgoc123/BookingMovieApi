@@ -4,6 +4,7 @@ using BOOKING_MOVIE_ADMIN.Values;
 using BOOKING_MOVIE_CORE;
 using BOOKING_MOVIE_CORE.Services;
 using BOOKING_MOVIE_ENTITY.Entities;
+using BOOKING_MOVIE_ENTITY.Helper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BOOKING_MOVIE_ADMIN.Reponse
@@ -50,6 +51,14 @@ namespace BOOKING_MOVIE_ADMIN.Reponse
             {
                 int.TryParse(HttpContext.Request.Query["rowPerPage"].ToString(), out int rowPerPage);
                 return rowPerPage == 0 ? DEFAULT_ROW_PER_PAGE : rowPerPage;
+            }
+        }
+        
+        public string CurrentUserEmail
+        {
+            get
+            {
+                return JwtHelper.GetCurrentInformation(User, e => e.Type.Equals(CLAIMUSER.EMAILADDRESS));
             }
         }
     }

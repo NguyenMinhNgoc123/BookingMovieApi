@@ -21,6 +21,6 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         public long CurrentLoyaltyPoint { get; set; } = 0;
         
-        public string Password { get; set; }
+        public string PasswordHash { get; set; }
     }
 }

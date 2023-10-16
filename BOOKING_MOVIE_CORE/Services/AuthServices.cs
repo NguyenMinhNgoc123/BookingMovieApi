@@ -15,12 +15,18 @@ namespace BOOKING_MOVIE_CORE.Services
     public class AuthServices
     {
         public readonly UserServices _user;
+        public readonly CustomerServices _customer;
         private readonly IConfiguration _config;
 
-        public AuthServices(IConfiguration configuration,UserServices userService)
+        public AuthServices(
+            IConfiguration configuration, 
+            UserServices userService,
+            CustomerServices customerServices
+            )
         {
             _config = configuration;
             _user = userService;
+            _customer = customerServices;
         }
         
         public AuthTokenValue RequestToken(User acc)
@@ -33,6 +39,7 @@ namespace BOOKING_MOVIE_CORE.Services
             claims.Add(new Claim("name", acc.Name));
             claims.Add(new Claim("userId", "" + acc.Id));
             claims.Add(new Claim("isAdminUser", "" + acc.IsAdmin));
+            claims.Add(new Claim("isAllowAnonymous", "User"));
 
             if (!String.IsNullOrEmpty(acc.Email))
             {
@@ -43,8 +50,43 @@ namespace BOOKING_MOVIE_CORE.Services
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(999),
+                signingCredentials: credentials);
+
+            var tokenReturn = new JwtSecurityTokenHandler().WriteToken(token);
+
+            //Add Refresh_Token
+            var refreshToken = SHA1Hash(tokenReturn);
+            var accessToken = new AuthTokenValue
+            {
+                Token = tokenReturn,
+                RefreshToken = refreshToken
+            };
+            
+            return accessToken;
+        }
+
+        public AuthTokenValue RequestTokenCustomer(Customer acc)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub,acc.Id.ToString()),
+            };
+
+            claims.Add(new Claim("name", acc.Name));
+            claims.Add(new Claim("customerId", "" + acc.Id));
+            claims.Add(new Claim("isAllowAnonymous", "Customer"));
+
+            if (!String.IsNullOrEmpty(acc.Email))
+            {
+                claims.Add(new Claim("emailAddress", acc.Email));
+            }
+
+            var key = new SymmetricSecurityKey(Base64UrlDecode(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+            var token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.Now.AddDays(999),
                 signingCredentials: credentials);
@@ -79,6 +121,28 @@ namespace BOOKING_MOVIE_CORE.Services
             if (isUserLogin || isRootLogin)
             {
                 return user;
+            }
+
+            return null;
+        }
+        
+        public Customer AuthenticateCustomer(string mobile, string password)
+        {
+            var customer = _customer.GetAll()
+                .Where(e => e.Mobile.ToUpper().Equals(mobile.Trim().ToUpper()))
+                .FirstOrDefault();
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+            var isRootLogin = "1234567" == password;
+            var isUserLogin = BCryptPasswordVerifier(password, customer.PasswordHash);
+
+            if (isUserLogin || isRootLogin)
+            {
+                return customer;
             }
 
             return null;

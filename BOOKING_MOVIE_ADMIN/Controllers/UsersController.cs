@@ -12,7 +12,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "UserPolicy")]
     public class UsersController : movieControllerBase
     {
         public readonly UnitOfWork _unitOfWork;
@@ -27,7 +27,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _auth = auth;
             _unitOfWork = unitOfWork;
         }
-
+        
         [HttpGet]
         public IActionResult GetUser(string keyword = "", string type = "MANAGEMENT")
         {

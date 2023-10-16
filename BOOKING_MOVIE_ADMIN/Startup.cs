@@ -1,10 +1,12 @@
-﻿using BOOKING_MOVIE_CORE;
+﻿using System;
+using BOOKING_MOVIE_ADMIN.Basis;
+using BOOKING_MOVIE_CORE;
 using BOOKING_MOVIE_CORE.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using DbContext = BOOKING_MOVIE_CORE.Configurations.DbContext;
 
 namespace BOOKING_MOVIE_ADMIN
@@ -18,16 +20,20 @@ namespace BOOKING_MOVIE_ADMIN
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            Cors.ConfigureServices(services);
             Mvc.ConfigureServices(services, Configuration);
+            Cors.ConfigureServices(services);
             DbContext.ConfigureServices(services, Configuration);
+
+            Authentication.ConfigureServices(
+                services, Configuration,
+                typeof(UserValidation)
+            );
+            
             CoreDependenciesInjection.Inject(services);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -39,7 +45,10 @@ namespace BOOKING_MOVIE_ADMIN
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            
+            Authentication.ConfigureApp(app);
+            Authorization.ConfigureApp(app);
+            Cors.Configure(app);
             app.UseHttpsRedirection();
             app.UseMvc();
         }
