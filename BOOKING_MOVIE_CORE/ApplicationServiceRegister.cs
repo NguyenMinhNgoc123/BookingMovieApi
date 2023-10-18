@@ -19,6 +19,7 @@ namespace BOOKING_MOVIE_CORE
             services.AddScoped<InvoiceServices>();
             services.AddScoped<InvoicesDetailServices>();
             services.AddScoped<MovieActor>();
+            services.AddScoped<RoomServices>();
         }
 
     }

@@ -8,6 +8,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOOKING_MOVIE_MIGRATION", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOOKING_MOVIE_ENTITY", "BOOKING_MOVIE_ENTITY\BOOKING_MOVIE_ENTITY.csproj", "{DA975662-2B10-44B5-86B7-E5CCD537C1A8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Iltems", "Solution Iltems", "{4F0E6C49-7B4C-4778-8292-4328D64BA0E1}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

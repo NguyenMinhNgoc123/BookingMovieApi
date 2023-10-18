@@ -33,6 +33,15 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         [IgnoreDataMember]
         public virtual ICollection<MovieDirector> MovieDirectors { get; set; }
+        
+        [IgnoreDataMember]
+        public virtual ICollection<MovieRoom> MovieRooms { get; set; }
+        
+        [IgnoreDataMember]
+        public virtual ICollection<MovieCinema> MovieCinemas { get; set; }
+        
+        [IgnoreDataMember]
+        public virtual ICollection<MovieDateSetting> MovieDateSettings { get; set; }
 
     }
 }

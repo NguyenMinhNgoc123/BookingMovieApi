@@ -61,42 +61,48 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             body.Created = DateTime.Now;
             body.CreatedBy = CurrentUserEmail;
 
-            var movieActors = new List<MovieActor>();
-            if (body.MovieActors.Count > 0)
-            {
-                movieActors = body.MovieActors.Select(e =>
-                {
-                    e.Created = DateTime.Now;
-                    e.CreatedBy = CurrentUserEmail;
-                    return e;
-                }).ToList();
-            }
-
-            var movieCategories = new List<MovieCategories>();
-            if (body.MovieCategories.Count > 0) 
-            {
-                movieCategories = body.MovieCategories.Select(e =>
-                {
-                    e.Created = DateTime.Now;
-                    e.CreatedBy = CurrentUserEmail;
-                    return e;
-                }).ToList();
-            }
-            
-            var movieDirector = new List<MovieDirector>();
-            if (body.MovieCategories.Count > 0) 
-            {
-                movieDirector = body.MovieDirectors.Select(e =>
-                {
-                    e.Created = DateTime.Now;
-                    e.CreatedBy = CurrentUserEmail;
-                    return e;
-                }).ToList();
-            }
-            
             using (var transaction = _unitOfWork.BeginTransaction())
             {
                 _movie.Add(body);
+                
+                var movieActors = new List<MovieActor>();
+                if (body.MovieActors.Count > 0)
+                {
+                    movieActors = body.MovieActors.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.MovieId = body.Id;
+                        return e;
+                    }).ToList();
+                }
+
+                var movieCategories = new List<MovieCategories>();
+                if (body.MovieCategories.Count > 0) 
+                {
+                    movieCategories = body.MovieCategories.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.MovieId = body.Id;
+
+                        return e;
+                    }).ToList();
+                }
+            
+                var movieDirector = new List<MovieDirector>();
+                if (body.MovieCategories.Count > 0) 
+                {
+                    movieDirector = body.MovieDirectors.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.MovieId = body.Id;
+
+                        return e;
+                    }).ToList();
+                }
+                
                 _movieActor.AddRange(movieActors);
                 _movieCategories.AddRange(movieCategories);
                 _movieDirector.AddRange(movieDirector);

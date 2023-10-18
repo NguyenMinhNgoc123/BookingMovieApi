@@ -11,6 +11,8 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         public long RoomId { get; set; }
         
-        public virtual Collection<Movie> Movies { get; set; }
+        public virtual Room Room { get; set; }
+
+        public virtual Movie Movie { get; set; }
     }
 }

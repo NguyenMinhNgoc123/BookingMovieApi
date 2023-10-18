@@ -10,6 +10,6 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         public long MovieId { get; set; }
         
-        public virtual Collection<Movie> Movies { get; set; }
+        public virtual Movie Movie { get; set; }
     }
 }

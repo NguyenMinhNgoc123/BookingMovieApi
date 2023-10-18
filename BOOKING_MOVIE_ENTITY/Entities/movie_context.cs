@@ -47,6 +47,12 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder = GlobalQueryFilter.BuildFillter(modelBuilder);
+
+            modelBuilder.Entity<MovieCinema>(entity =>
+            {
+                entity.HasOne(e => e.Movie)
+                    .WithMany(e => e.MovieCinemas);
+            });
         }
     }
 }
