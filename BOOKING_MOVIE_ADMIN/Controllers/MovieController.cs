@@ -19,6 +19,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         private readonly MovieActorServices _movieActor;
         private readonly MovieCategoriesServices _movieCategories;
         private readonly MovieDirectorServices _movieDirector;
+        private readonly MovieCinemaServices _movieCinema;
+        private readonly MovieRoomServices _movieRoom;
+        private readonly MovieDateSettingServices _movieDateSetting;
 
         public MovieController(
             MovieServices movieServices,
@@ -26,7 +29,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             UnitOfWork unitOfWork,
             MovieActorServices movieActor,
             MovieCategoriesServices movieCategories,
-            MovieDirectorServices movieDirector
+            MovieDirectorServices movieDirector,
+            MovieCinemaServices movieCinema,
+            MovieRoomServices movieRoom,
+            MovieDateSettingServices movieDateSetting
             ) : base(userService)
         {
             _unitOfWork = unitOfWork;
@@ -34,6 +40,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _movieCategories = movieCategories;
             _movieDirector = movieDirector;
             _movie = movieServices;
+            _movieCinema = movieCinema;
+            _movieRoom = movieRoom;
+            _movieDateSetting = movieDateSetting;
         }
 
         [Authorize("User")]
@@ -102,10 +111,15 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                         return e;
                     }).ToList();
                 }
+
+                
+                
+                
                 
                 _movieActor.AddRange(movieActors);
                 _movieCategories.AddRange(movieCategories);
                 _movieDirector.AddRange(movieDirector);
+                
                 transaction.Commit();
             }
             

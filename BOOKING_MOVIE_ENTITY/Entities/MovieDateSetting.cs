@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -8,8 +8,6 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     {
         public DateTime Time { get; set; }
         
-        public long MovieId { get; set; }
-        
-        public virtual Movie Movie { get; set; }
+        public virtual ICollection<MovieCinema> MovieCinemas { get; set; }
     }
 }

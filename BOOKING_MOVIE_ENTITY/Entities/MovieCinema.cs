@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -7,11 +7,10 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     {
         public string Name { get; set; }
         
-        public long MovieId { get; set; }
-        
         public long CinemaId { get; set; }
         
         public virtual Cinema Cinema { get; set; }
-        public virtual Movie Movie { get; set; }
+        
+        public virtual ICollection<MovieRoom> MovieRooms { get; set; }
     }
 }
