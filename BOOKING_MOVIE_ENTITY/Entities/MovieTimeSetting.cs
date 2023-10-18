@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities

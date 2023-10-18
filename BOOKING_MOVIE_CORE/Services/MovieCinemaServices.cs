@@ -4,7 +4,7 @@ namespace BOOKING_MOVIE_CORE.Services
 {
     public class MovieCinemaServices : ApplicationService<MovieCinema>
     {
-        public MovieCinemaServices(DomainService<MovieCinema> domainService) : base(domainService)
+        public MovieCinemaServices(GenericDomainService<MovieCinema> domainService) : base(domainService)
         {
         }
     }

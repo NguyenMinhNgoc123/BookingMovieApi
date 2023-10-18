@@ -111,14 +111,12 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                         return e;
                     }).ToList();
                 }
-
-                
-                
-                
                 
                 _movieActor.AddRange(movieActors);
                 _movieCategories.AddRange(movieCategories);
                 _movieDirector.AddRange(movieDirector);
+                
+                _movieDateSetting.CreateMovieDateSettings(body.MovieDateSettings.ToList(), CurrentUserEmail);
                 
                 transaction.Commit();
             }

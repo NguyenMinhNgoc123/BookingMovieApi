@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
