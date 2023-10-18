@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
-    [Controller]
+    [Route("[controller]")]
     [Authorize(Policy = "User")]
     public class PaymentMethodController : movieControllerBase
     {

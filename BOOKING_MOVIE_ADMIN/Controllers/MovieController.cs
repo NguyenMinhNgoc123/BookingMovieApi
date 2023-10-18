@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
-    [Controller]
+    [Route("[controller]")]
     public class MovieController : movieControllerBase
     {
         private readonly MovieServices _movie;
@@ -36,6 +36,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _movie = movieServices;
         }
 
+        [Authorize("User")]
         [HttpGet]
         public IActionResult GetMovieAllUser()
         {
@@ -48,6 +49,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return OkList(data);
         }
         
+        [Authorize("User")]
         [HttpPost]
         public IActionResult CreateMovieAllUser([FromBody] Movie body)
         {
@@ -103,7 +105,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             
             return Ok();
         }
-        
+
+        [Authorize("User")]
         [HttpDelete("{id}")]
         public IActionResult CreateMovieAllUser([FromRoute] long id,[FromBody] Movie body)
         {

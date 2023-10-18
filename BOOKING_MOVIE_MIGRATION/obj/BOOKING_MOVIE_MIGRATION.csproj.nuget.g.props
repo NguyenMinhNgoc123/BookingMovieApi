@@ -3,15 +3,16 @@
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
-    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">/Applications/Projects/MOVIE/BookingMovieApi/BOOKING_MOVIE_MIGRATION/obj/project.assets.json</ProjectAssetsFile>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
     <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/Users/mb/.nuget/packages/</NuGetPackageRoot>
     <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/Users/mb/.nuget/packages/;/usr/local/share/dotnet/sdk/NuGetFallbackFolder</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
-    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.0.2</NuGetToolVersion>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.3.1</NuGetToolVersion>
   </PropertyGroup>
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="/Users/mb/.nuget/packages/" />
+    <SourceRoot Include="/usr/local/share/dotnet/sdk/NuGetFallbackFolder/" />
+  </ItemGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <Import Project="$(NuGetPackageRoot)microsoft.netcore.app/2.2.0/build/netcoreapp2.2/Microsoft.NETCore.App.props" Condition="Exists('$(NuGetPackageRoot)microsoft.netcore.app/2.2.0/build/netcoreapp2.2/Microsoft.NETCore.App.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.extensions.fileproviders.embedded/2.2.0/build/netstandard2.0/Microsoft.Extensions.FileProviders.Embedded.props" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.fileproviders.embedded/2.2.0/build/netstandard2.0/Microsoft.Extensions.FileProviders.Embedded.props')" />

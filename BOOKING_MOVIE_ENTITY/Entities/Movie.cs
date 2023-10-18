@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
@@ -21,6 +21,10 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         public string Description { get; set; }
         
+        public DateTime ReleaseDate { get; set; }
+
+        public DateTime PremiereDate { get; set; }
+
         [IgnoreDataMember]
         public virtual ICollection<MovieCategories> MovieCategories { get; set; }
         
