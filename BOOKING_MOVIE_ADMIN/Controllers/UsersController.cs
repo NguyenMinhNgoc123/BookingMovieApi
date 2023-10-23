@@ -12,8 +12,6 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Policy = "User")]
-    [Authorize(Policy = "Customer")]
     public class UsersController : movieControllerBase
     {
         public readonly UnitOfWork _unitOfWork;

@@ -23,13 +23,8 @@ namespace BOOKING_MOVIE_CORE.Services
             _movieTimeSetting = movieTimeSetting;
         }
 
-        public void CreateMovieDateSettings(List<MovieDateSetting> movieDateSettings, string currentUserEmail)
+        public void CreateMovieDateSettings(List<MovieDateSetting> movieDateSettings, long movieId, string currentUserEmail)
         {
-            var movieDateSettingsToCreate = new List<MovieDateSetting>();
-            var movieCinemasToCreate = new List<MovieCinema>();
-            var movieRoomsToCreate = new List<MovieRoom>();
-            var movieTimeSettingsToCreate = new List<MovieTimeSetting>();
-
             foreach (var movieDateSetting in movieDateSettings)
             {
                 var createMovieDateSetting = new MovieDateSetting()
@@ -37,9 +32,11 @@ namespace BOOKING_MOVIE_CORE.Services
                     Created = DateTime.Now,
                     CreatedBy = currentUserEmail,
                     Status = OBJECT_STATUS.ENABLE,
-                    Time = movieDateSetting.Time
+                    Time = movieDateSetting.Time,
+                    MovieId = movieId
                 };
-                movieDateSettingsToCreate.Add(createMovieDateSetting);
+                
+                Add(createMovieDateSetting);
 
                 foreach (var movieCinema in movieDateSetting.MovieCinemas.ToList())
                 {
@@ -48,9 +45,10 @@ namespace BOOKING_MOVIE_CORE.Services
                         Created = DateTime.Now,
                         CreatedBy = currentUserEmail,
                         Status = OBJECT_STATUS.ENABLE,
-                        CinemaId = createMovieDateSetting.Id,
+                        MovieDateSettingId = createMovieDateSetting.Id,
+                        CinemaId = movieCinema.CinemaId
                     };
-                    movieCinemasToCreate.Add(createMovieCinema);
+                    _movieCinema.Add(createMovieCinema);
 
                     foreach (var movieRoom in movieCinema.MovieRooms)
                     {
@@ -59,28 +57,32 @@ namespace BOOKING_MOVIE_CORE.Services
                             Created = DateTime.Now,
                             CreatedBy = currentUserEmail,
                             Status = OBJECT_STATUS.ENABLE,
-                            RoomId = movieRoom.Id,
+                            MovieCinemaId = createMovieCinema.Id,
+                            RoomId = movieRoom.RoomId
                         };
-                        movieRoomsToCreate.Add(createMovieCinemaRoom);
+                        _movieRoom.Add(createMovieCinemaRoom);
 
-                        var createMovieTimeSettingList = movieRoom.MovieTimeSettings.Select(e => new MovieTimeSetting()
+                        var createMovieTimeSettingList = movieRoom.MovieTimeSettings.Select(e =>
                         {
-                            Created = DateTime.Now,
-                            CreatedBy = currentUserEmail,
-                            Status = OBJECT_STATUS.ENABLE,
-                            Time = e.Time,
-                            MovieRoomId = createMovieCinemaRoom.Id
+                            DateTimeOffset dateTimeOffset = DateTimeOffset.Parse(e.Time);
+
+                            TimeSpan timeSpan = dateTimeOffset.TimeOfDay;
+
+                            string formattedTime = timeSpan.ToString("hh\\:mm");
+                            
+                            return new MovieTimeSetting()
+                            {
+                                Created = DateTime.Now,
+                                CreatedBy = currentUserEmail,
+                                Status = OBJECT_STATUS.ENABLE,
+                                Time = formattedTime,
+                                MovieRoomId = createMovieCinemaRoom.Id
+                            };
                         });
-                        movieTimeSettingsToCreate.AddRange(createMovieTimeSettingList);
+                        _movieTimeSetting.AddRange(createMovieTimeSettingList.ToList());
                     }
                 }
             }
-
-
-            AddRange(movieDateSettingsToCreate);
-            _movieCinema.AddRange(movieCinemasToCreate);
-            _movieRoom.AddRange(movieRoomsToCreate);
-            _movieTimeSetting.AddRange(movieTimeSettingsToCreate);
         }
     }
 }

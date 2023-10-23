@@ -6,8 +6,7 @@ namespace BOOKING_MOVIE_ENTITY.Entities
 {
     public class MovieTimeSetting : EntitieDate
     {
-        public TimeSpan Time { get; set; }
-        
+        public string Time { get; set; }
         public long MovieRoomId { get; set; }
         
         public virtual MovieRoom MovieRoom { get; set; }

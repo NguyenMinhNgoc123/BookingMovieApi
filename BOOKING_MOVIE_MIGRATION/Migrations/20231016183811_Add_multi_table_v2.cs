@@ -45,30 +45,6 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                 });
             
             migrationBuilder.CreateTable(
-                name: "MovieCinema",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    UpdatedBy = table.Column<string>(nullable: true),
-                    Updated = table.Column<DateTime>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: true),
-                    Status = table.Column<string>(nullable: true),
-                    CinemaId = table.Column<long>(nullable: true),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Director", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MovieCinema_Cinema_CinemaId",
-                        column: x => x.CinemaId,
-                        principalTable: "Cinema",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-            
-            migrationBuilder.CreateTable(
                 name: "MovieDateSetting",
                 columns: table => new
                 {
@@ -80,12 +56,50 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     Created = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     Time = table.Column<DateTime>(nullable: false),
+                    MovieId = table.Column<long>(nullable: true),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Director", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MovieDateSetting_Movie_RoomId",
+                        column: x => x.MovieId,
+                        principalTable: "Movie",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
             
+            migrationBuilder.CreateTable(
+                name: "MovieCinema",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    UpdatedBy = table.Column<string>(nullable: true),
+                    Updated = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    CinemaId = table.Column<long>(nullable: true),
+                    MovieDateSettingId = table.Column<long>(nullable: true),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Director", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MovieCinema_Cinema_CinemaId",
+                        column: x => x.CinemaId,
+                        principalTable: "Cinema",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieCinema_MovieDateSetting_MovieDateSettingId",
+                        column: x => x.MovieDateSettingId,
+                        principalTable: "MovieDateSetting",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateTable(
                 name: "MovieRoom",
                 columns: table => new
@@ -97,8 +111,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     Updated = table.Column<DateTime>(nullable: true),
                     Created = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
                     RoomId = table.Column<long>(nullable: true),
+                    MovieCinemaId = table.Column<long>(nullable: true),
                 },
                 constraints: table =>
                 {
@@ -107,6 +121,12 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                         name: "FK_MovieRoom_Room_RoomId",
                         column: x => x.RoomId,
                         principalTable: "Room",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieRoom_MovieCinema_MovieCinemaId",
+                        column: x => x.MovieCinemaId,
+                        principalTable: "MovieCinema",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -122,7 +142,7 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     Updated = table.Column<DateTime>(nullable: true),
                     Created = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
-                    Time = table.Column<TimeSpan>(nullable: true),
+                    Time = table.Column<string>(nullable: true),
                     MovieRoomId = table.Column<long>(nullable: true),
                 },
                 constraints: table =>

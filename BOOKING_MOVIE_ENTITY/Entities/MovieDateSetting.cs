@@ -8,6 +8,11 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     public class MovieDateSetting : EntitieDate
     {
         public DateTime Time { get; set; }
+        
+        public long MovieId { get; set; }
+        
+        public Movie Movie { get; set; }
+        
         public virtual ICollection<MovieCinema> MovieCinemas { get; set; }
     }
 }

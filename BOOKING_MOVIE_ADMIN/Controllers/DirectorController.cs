@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
     [Route("[controller]")]
+    [ApiController]
     public class DirectorController : movieControllerBase
     {
         private readonly DirectorServices _director;

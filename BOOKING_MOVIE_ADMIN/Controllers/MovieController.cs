@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
     [Route("[controller]")]
+    [ApiController]
     public class MovieController : movieControllerBase
     {
         private readonly MovieServices _movie;
@@ -22,6 +23,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         private readonly MovieCinemaServices _movieCinema;
         private readonly MovieRoomServices _movieRoom;
         private readonly MovieDateSettingServices _movieDateSetting;
+        private readonly ActorServices _actor;
+        private readonly CategoryServices _category;
+        private readonly DirectorServices _director;
 
         public MovieController(
             MovieServices movieServices,
@@ -32,7 +36,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             MovieDirectorServices movieDirector,
             MovieCinemaServices movieCinema,
             MovieRoomServices movieRoom,
-            MovieDateSettingServices movieDateSetting
+            MovieDateSettingServices movieDateSetting,
+            ActorServices actor,
+            CategoryServices category,
+            DirectorServices director
             ) : base(userService)
         {
             _unitOfWork = unitOfWork;
@@ -43,6 +50,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _movieCinema = movieCinema;
             _movieRoom = movieRoom;
             _movieDateSetting = movieDateSetting;
+            _actor = actor;
+            _category = category;
+            _director = director;
         }
 
         [Authorize("User")]
@@ -66,13 +76,58 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
-            body.Created = DateTime.Now;
-            body.CreatedBy = CurrentUserEmail;
 
+            if (body.MovieActors.Count > 0)
+            {
+                var movieActorIds = body.MovieActors.Select(e => e.Id);
+                var movieActors = _actor.GetAll().Where(e => movieActorIds.Contains(e.Id)).ToList();
+
+                if (movieActorIds.Count() != movieActors.Count)
+                {
+                    return BadRequest("ACTOR_NOT_EXIST");
+                }
+            }
+            
+            if (body.MovieCategories.Count > 0)
+            {
+                var movieCategoryIds = body.MovieCategories.Select(e => e.Id);
+                var movieCategories = _category.GetAll().Where(e => movieCategoryIds.Contains(e.Id)).ToList();
+
+                if (movieCategoryIds.Count() != movieCategories.Count)
+                {
+                    return BadRequest("CATEGORY_NOT_EXIST");
+                }
+            }
+            
+            if (body.MovieDirectors.Count > 0)
+            {
+                var movieDirectorIds = body.MovieDirectors.Select(e => e.Id);
+                var movieDirector = _movieCategories.GetAll().Where(e => movieDirectorIds.Contains(e.Id)).ToList();
+
+                if (movieDirectorIds.Count() != movieDirector.Count)
+                {
+                    return BadRequest("MOVIE_ACTOR_NOT_EXIST");
+                }
+            }
+            
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _movie.Add(body);
+                var createMovie = new Movie()
+                {
+                    Created = DateTime.Now,
+                    CreatedBy = CurrentUserEmail,
+                    Name = body.Name,
+                    MovieStatus = body.MovieStatus,
+                    YearOfRelease = body.YearOfRelease,
+                    Time = body.Time,
+                    Country = body.Country,
+                    Rate = body.Rate,
+                    Description = body.Description,
+                    ReleaseDate = body.ReleaseDate,
+                    PremiereDate = body.PremiereDate,
+                };
+                
+                _movie.Add(createMovie);
                 
                 var movieActors = new List<MovieActor>();
                 if (body.MovieActors.Count > 0)
@@ -116,7 +171,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 _movieCategories.AddRange(movieCategories);
                 _movieDirector.AddRange(movieDirector);
                 
-                _movieDateSetting.CreateMovieDateSettings(body.MovieDateSettings.ToList(), CurrentUserEmail);
+                _movieDateSetting.CreateMovieDateSettings(body.MovieDateSettings.ToList(), createMovie.Id, CurrentUserEmail);
                 
                 transaction.Commit();
             }
