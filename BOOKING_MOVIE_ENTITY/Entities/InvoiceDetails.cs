@@ -5,8 +5,18 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     public class InvoiceDetails : EntitieDate
     {
         public long? InvoiceId { get; set; }
-
+        
         public long? MovieId { get; set; }
+        
+        public long? RoomId { get; set; }
+
+        public long? CinemaId { get; set; }
+
+        public long? MovieDateSettingIds { get; set; }
+
+        public long? MovieTimeSettingIds { get; set; }
+        
+        public long? ObjectId { get; set; }
 
         public string ObjectName { get; set; }
 
