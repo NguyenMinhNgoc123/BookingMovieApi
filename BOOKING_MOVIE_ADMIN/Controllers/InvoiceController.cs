@@ -39,7 +39,6 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 return BadRequest(ModelState);
             }
 
-            
             return Ok();
         }
     }

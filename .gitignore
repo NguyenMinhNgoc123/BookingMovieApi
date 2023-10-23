@@ -270,3 +270,8 @@ appsettings.Development.json
 Coverage
 TestResults
 coverage.json
+
+_ReSharper.*
+bin
+obj
+packages
