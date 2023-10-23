@@ -276,11 +276,24 @@ bin
 obj
 packages
 
-/config/databases.yml
-/cache/*
-/log/*
-/data/sql/*
-/lib/filter/base/*
-/lib/form/base/*
-/lib/model/map/*
-/lib/model/om/*
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+#Visual Studio files
+*.[Oo]bj
+obj/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+Ankh.NoLoad
+
+#Tooling
+*.resharper
+[Tt]est[Rr]esult*
+
+#Project files
+[Bb]uild/
+
+#Subversion files
+.svn
