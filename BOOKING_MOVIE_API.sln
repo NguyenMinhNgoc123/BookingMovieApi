@@ -11,6 +11,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Iltems", "Solution Iltems", "{4F0E6C49-7B4C-4778-8292-4328D64BA0E1}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		.gitattributes = .gitattributes
 	EndProjectSection
 EndProject
 Global
