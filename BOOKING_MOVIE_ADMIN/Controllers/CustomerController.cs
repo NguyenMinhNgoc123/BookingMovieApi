@@ -26,7 +26,49 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _auth = authServices;
             _unitOfWork = unitOfWork;
         }
+        
+        [HttpPost("create")]
+        [Authorize("User")]
+        public IActionResult CreateUser([FromBody] CustomerDto body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var userExist = _customer.GetAll()
+                .Where(o => o.Mobile == body.Mobile)
+                .FirstOrDefault();
 
+            if (userExist != null)
+            {
+                return BadRequest("CUSTOMER_EXIST");
+            }
+            
+            var mailExist = _customer.GetAll()
+                .Where(o => o.Email == body.Email)
+                .FirstOrDefault();
+
+            if (mailExist != null)
+            {
+                return BadRequest("EMAIL_EXIST");
+            }
+
+            body.CreatedBy = CurrentUserEmail;
+            body.Created = DateTime.Now;
+            body.Status = OBJECT_STATUS.ENABLE;
+            body.PasswordHash = _auth.BCryptPasswordEncoder(body.Password);
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _customer.Add(body);
+
+                transaction.Commit();
+            }
+
+            return Ok(body);
+        }
+        
         [HttpPost]
         [AllowAnonymous]
         public IActionResult Register([FromBody] CustomerDto body)
@@ -45,8 +87,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 return BadRequest("CUSTOMER_EXIST");
             }
 
-            body.CreatedBy = "";
+            body.CreatedBy = body.Email;
             body.Status = OBJECT_STATUS.ENABLE;
+            body.Created = DateTime.Now;
             body.PasswordHash = _auth.BCryptPasswordEncoder(body.Password);
             
             using (var transaction = _unitOfWork.BeginTransaction())
