@@ -33,6 +33,10 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual DbSet<MovieRoom> MovieRooms { get; set; }
         public virtual DbSet<MovieTimeSetting> MovieTimeSetting { get; set; }
         public virtual DbSet<Room> Room { get; set; }
+        public virtual DbSet<Invoice> Invoice { get; set; }
+        public virtual DbSet<InvoiceDetails> InvoiceDetails { get; set; }
+        public virtual DbSet<Food> Food { get; set; }
+        public virtual DbSet<ComboFood> ComboFood { get; set; }
 
 
         public void ResetTracker()
@@ -71,6 +75,13 @@ namespace BOOKING_MOVIE_ENTITY.Entities
             {
                 entity.HasMany(e => e.MovieTimeSettings);
                 entity.ToTable("MovieRoom");
+            });
+            
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasMany(e => e.InvoiceDetails);
+                entity.HasMany(e => e.InvoicePayment);
+                entity.ToTable("Invoice");
             });
         }
     }

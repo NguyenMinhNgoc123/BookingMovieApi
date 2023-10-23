@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -51,9 +52,9 @@ namespace BOOKING_MOVIE_ENTITY.Entities
 
         public virtual Customer Customer { get; set; }
 
-        // public virtual ICollection<InvoiceDetail> InvoiceDetail { get; set; }
+        public virtual ICollection<InvoiceDetails> InvoiceDetails { get; set; }
 
-        // public virtual ICollection<InvoicePayment> InvoicePayment { get; set; }
+        public virtual ICollection<InvoicePayment> InvoicePayment { get; set; }
 
     }
 }
