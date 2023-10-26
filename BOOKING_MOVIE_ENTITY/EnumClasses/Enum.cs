@@ -21,4 +21,22 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public const string CURRENT_USER_ID = "userId";
         public const string IS_ADMIN_USER = "isAdminUser";
     }
+    
+    public static class PAYMENT_STATUS
+    {
+        public const string PAID = "PAID";
+        public const string UNPAID = "UNPAID";
+    }
+    
+    public static class OBJECT_NAME_MOVIE
+    {
+        public const string SEAT = "SEAT";
+        public const string FOOD = "FOOD";
+    }
+    
+    public static class VALIDATE_TEXT
+    {
+        public const string SUCCESS = "SUCCESS";
+    }
+    
 }

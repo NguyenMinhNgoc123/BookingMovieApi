@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
     [Route("[controller]")]
-    [Authorize(Policy = "User")]
+    [ApiController]
     public class PaymentMethodController : movieControllerBase
     {
         private readonly PaymentMethodServices _paymentMethod;
@@ -28,6 +28,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "User")]
         public IActionResult GetPaymentMethod()
         {
             var data = _paymentMethod
@@ -40,6 +41,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpGet("{id}")]
+        [Authorize(Policy = "User")]
         public IActionResult GetPaymentMethodDetail([FromRoute] long id)
         {
             if (!ModelState.IsValid)
@@ -58,6 +60,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpPost]
+        [Authorize(Policy = "User")]
         public IActionResult Create([FromBody] PaymentMethod body)
         {
             if (!ModelState.IsValid)
@@ -76,6 +79,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 return BadRequest("PAYMENT_EXIST");
             }
 
+            body.Status = OBJECT_STATUS.ENABLE;
             body.Created = DateTime.Now;
             body.CreatedBy = CurrentUserEmail;
             
@@ -89,6 +93,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpPut("{id}")]
+        [Authorize(Policy = "User")]
         public IActionResult Update([FromRoute] long id,[FromBody] PaymentMethod body)
         {
             if (!ModelState.IsValid)

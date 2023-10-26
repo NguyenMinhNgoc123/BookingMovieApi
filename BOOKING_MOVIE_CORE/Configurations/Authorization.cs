@@ -9,25 +9,28 @@ namespace BOOKING_MOVIE_CORE.Configurations
     {
         public static void ConfigureServices(IServiceCollection services, Type EventType = null)
         {
-            if(EventType != null)
+            if (EventType != null)
             {
                 services.AddScoped(EventType);
             }
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("User", policy =>
-                {
-                    policy.RequireClaim("userId"); 
-                });
+                options.AddPolicy("User", policy => { policy.RequireClaim("userId"); });
 
-                options.AddPolicy("Customer", policy =>
+                options.AddPolicy("Customer", policy => { policy.RequireClaim("customerId"); });
+
+                options.AddPolicy("UserOrCustomer", policy =>
                 {
-                    policy.RequireClaim("customerId");
+                    policy.RequireAssertion(context =>
+                    {
+                        return context.User.HasClaim(c =>
+                            (c.Type == "customerId" || c.Type == "userId"));
+                    });
                 });
             });
         }
-        
+
         public static void ConfigureApp(IApplicationBuilder app)
         {
             app.UseAuthentication();

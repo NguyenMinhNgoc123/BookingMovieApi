@@ -12,9 +12,9 @@ namespace BOOKING_MOVIE_ENTITY.Entities
 
         public long? CinemaId { get; set; }
 
-        public long? MovieDateSettingIds { get; set; }
+        public long? MovieDateSettingId { get; set; }
 
-        public long? MovieTimeSettingIds { get; set; }
+        public long? MovieTimeSettingId { get; set; }
         
         public long? ObjectId { get; set; }
 
@@ -28,9 +28,9 @@ namespace BOOKING_MOVIE_ENTITY.Entities
 
         public decimal? DiscountValue { get; set; }
 
-        public decimal? Total { get; set; }
+        public decimal Total { get; set; }
 
-        public decimal? Quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         public bool? IsPaid { get; set; }
 

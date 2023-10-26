@@ -26,6 +26,9 @@ namespace BOOKING_MOVIE_CORE
             services.AddScoped<MovieRoomServices>();
             services.AddScoped<MovieDateSettingServices>();
             services.AddScoped<MovieTimeSettingServices>();
+            services.AddScoped<PaymentMethodServices>();
+            services.AddScoped<InvoicePaymentServices>();
+            services.AddScoped<PromotionServices>();
         }
 
     }

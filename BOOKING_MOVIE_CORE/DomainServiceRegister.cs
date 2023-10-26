@@ -7,7 +7,6 @@ namespace BOOKING_MOVIE_CORE
         public static void Register(IServiceCollection services)
         {
             services.AddScoped(typeof(GenericDomainService<>));
-            
         }
 
     }

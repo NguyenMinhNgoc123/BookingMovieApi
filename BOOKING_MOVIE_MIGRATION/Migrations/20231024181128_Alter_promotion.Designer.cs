@@ -3,14 +3,16 @@ using System;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BOOKING_MOVIE_MIGRATION.Migrations
 {
     [DbContext(typeof(movie_context))]
-    partial class movie_contextModelSnapshot : ModelSnapshot
+    [Migration("20231024181128_Alter_promotion")]
+    partial class Alter_promotion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,6 +228,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long?>("CashierId");
+
                     b.Property<string>("Code");
 
                     b.Property<DateTime?>("Created");
@@ -266,6 +270,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CashierId");
+
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("PromotionId");
@@ -292,11 +298,11 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<bool?>("IsPaid");
 
-                    b.Property<long?>("MovieDateSettingId");
+                    b.Property<long?>("MovieDateSettingIds");
 
                     b.Property<long?>("MovieId");
 
-                    b.Property<long?>("MovieTimeSettingId");
+                    b.Property<long?>("MovieTimeSettingIds");
 
                     b.Property<string>("ObjectCode");
 
@@ -805,6 +811,10 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
             modelBuilder.Entity("BOOKING_MOVIE_ENTITY.Entities.Invoice", b =>
                 {
+                    b.HasOne("BOOKING_MOVIE_ENTITY.Entities.User", "Cashier")
+                        .WithMany()
+                        .HasForeignKey("CashierId");
+
                     b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId");

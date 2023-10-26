@@ -13,9 +13,9 @@ namespace BOOKING_MOVIE_ADMIN.Values
 
         public long? CinemaId { get; set; }
 
-        public long? MovieDateSettingIds { get; set; }
+        public long? MovieDateSettingId { get; set; }
 
-        public long? MovieTimeSettingIds { get; set; }
+        public long? MovieTimeSettingId { get; set; }
         
         public long? ObjectId { get; set; }
 
@@ -29,18 +29,10 @@ namespace BOOKING_MOVIE_ADMIN.Values
 
         public decimal? DiscountValue { get; set; }
 
-        public decimal? Total { get; set; }
+        public decimal Total { get; set; }
 
-        public decimal? Quantity { get; set; }
-
-        public bool? IsPaid { get; set; }
+        public decimal Quantity { get; set; }
 
         public long? PromotionId { get; set; }
-
-        public virtual Promotion Promotion { get; set; }
-        
-        public virtual Movie Movie { get; set; }
-        
-        public virtual Invoice Invoice { get; set; }
     }
 }

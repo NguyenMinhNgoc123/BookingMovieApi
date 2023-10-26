@@ -3,9 +3,9 @@ using BOOKING_MOVIE_ENTITY.Entities;
 
 namespace BOOKING_MOVIE_CORE.Services
 {
-    public class MovieServices : GenericDomainService<Movie>
+    public class MovieServices : ApplicationService<Movie>
     {
-        public MovieServices(UnitOfWork unitOfWork) : base(unitOfWork)
+        public MovieServices(GenericDomainService<Movie> genericDomainService) : base(genericDomainService)
         {
         }
     }

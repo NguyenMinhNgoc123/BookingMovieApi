@@ -76,6 +76,7 @@ namespace BOOKING_MOVIE_CORE.Services
                                 CreatedBy = currentUserEmail,
                                 Status = OBJECT_STATUS.ENABLE,
                                 Time = formattedTime,
+                                Price = e.Price,
                                 MovieRoomId = createMovieCinemaRoom.Id
                             };
                         });

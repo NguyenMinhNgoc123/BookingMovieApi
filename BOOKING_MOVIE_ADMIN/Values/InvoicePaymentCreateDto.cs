@@ -8,7 +8,6 @@ namespace BOOKING_MOVIE_ADMIN.Values
         public long InvoiceId { get; set; }
 
         public long InvoiceMethodId { get; set; }
-
         public decimal? Total { get; set; }
 
         public virtual PaymentMethod InvoiceMethod { get; set; }

@@ -3,14 +3,16 @@ using System;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BOOKING_MOVIE_MIGRATION.Migrations
 {
     [DbContext(typeof(movie_context))]
-    partial class movie_contextModelSnapshot : ModelSnapshot
+    [Migration("20231023201010_Add_CustomerPromotion")]
+    partial class Add_CustomerPromotion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,34 +149,6 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.ToTable("Customer");
                 });
 
-            modelBuilder.Entity("BOOKING_MOVIE_ENTITY.Entities.CustomerPromotion", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("Created");
-
-                    b.Property<string>("CreatedBy");
-
-                    b.Property<long>("CustomerId");
-
-                    b.Property<long>("PromotionId");
-
-                    b.Property<string>("Status");
-
-                    b.Property<DateTime?>("Updated");
-
-                    b.Property<string>("UpdatedBy");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("PromotionId");
-
-                    b.ToTable("CustomerPromotion");
-                });
-
             modelBuilder.Entity("BOOKING_MOVIE_ENTITY.Entities.Director", b =>
                 {
                     b.Property<long>("Id")
@@ -226,6 +200,12 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long?>("BookingId");
+
+                    b.Property<decimal?>("CashBack");
+
+                    b.Property<long?>("CashierId");
+
                     b.Property<string>("Code");
 
                     b.Property<DateTime?>("Created");
@@ -238,11 +218,15 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<string>("DiscountUnit");
 
-                    b.Property<decimal?>("DiscountValue");
+                    b.Property<decimal>("DiscountValue");
 
                     b.Property<bool?>("IsDisplay");
 
+                    b.Property<long?>("LoyaltyPoint");
+
                     b.Property<string>("Note");
+
+                    b.Property<string>("NoteArrangement");
 
                     b.Property<string>("NotePayment");
 
@@ -260,11 +244,15 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<decimal>("TotalDetails");
 
+                    b.Property<string>("Type");
+
                     b.Property<DateTime?>("Updated");
 
                     b.Property<string>("UpdatedBy");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CashierId");
 
                     b.HasIndex("CustomerId");
 
@@ -292,11 +280,11 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<bool?>("IsPaid");
 
-                    b.Property<long?>("MovieDateSettingId");
+                    b.Property<long?>("MovieDateSettingIds");
 
                     b.Property<long?>("MovieId");
 
-                    b.Property<long?>("MovieTimeSettingId");
+                    b.Property<long?>("MovieTimeSettingIds");
 
                     b.Property<string>("ObjectCode");
 
@@ -657,6 +645,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<string>("CreatedBy");
 
+                    b.Property<long>("CustomerId");
+
                     b.Property<string>("Description");
 
                     b.Property<string>("DiscountUnit");
@@ -790,21 +780,12 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("BOOKING_MOVIE_ENTITY.Entities.CustomerPromotion", b =>
-                {
-                    b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Promotion", "Promotion")
-                        .WithMany()
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("BOOKING_MOVIE_ENTITY.Entities.Invoice", b =>
                 {
+                    b.HasOne("BOOKING_MOVIE_ENTITY.Entities.User", "Cashier")
+                        .WithMany()
+                        .HasForeignKey("CashierId");
+
                     b.HasOne("BOOKING_MOVIE_ENTITY.Entities.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId");

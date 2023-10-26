@@ -79,7 +79,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
             if (body.MovieActors.Count > 0)
             {
-                var movieActorIds = body.MovieActors.Select(e => e.Id);
+                var movieActorIds = body.MovieActors.Select(e => e.ActorId).ToList();
                 var movieActors = _actor.GetAll().Where(e => movieActorIds.Contains(e.Id)).ToList();
 
                 if (movieActorIds.Count() != movieActors.Count)
@@ -90,7 +90,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             
             if (body.MovieCategories.Count > 0)
             {
-                var movieCategoryIds = body.MovieCategories.Select(e => e.Id);
+                var movieCategoryIds = body.MovieCategories.Select(e => e.CategoryId).ToList();
                 var movieCategories = _category.GetAll().Where(e => movieCategoryIds.Contains(e.Id)).ToList();
 
                 if (movieCategoryIds.Count() != movieCategories.Count)
@@ -101,8 +101,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             
             if (body.MovieDirectors.Count > 0)
             {
-                var movieDirectorIds = body.MovieDirectors.Select(e => e.Id);
-                var movieDirector = _movieCategories.GetAll().Where(e => movieDirectorIds.Contains(e.Id)).ToList();
+                var movieDirectorIds = body.MovieDirectors.Select(e => e.DirectorId).ToList();
+                var movieDirector = _category.GetAll().Where(e => movieDirectorIds.Contains(e.Id)).ToList();
 
                 if (movieDirectorIds.Count() != movieDirector.Count)
                 {
@@ -136,7 +136,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     {
                         e.Created = DateTime.Now;
                         e.CreatedBy = CurrentUserEmail;
-                        e.MovieId = body.Id;
+                        e.MovieId = createMovie.Id;
                         return e;
                     }).ToList();
                 }
@@ -148,7 +148,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     {
                         e.Created = DateTime.Now;
                         e.CreatedBy = CurrentUserEmail;
-                        e.MovieId = body.Id;
+                        e.MovieId = createMovie.Id;
 
                         return e;
                     }).ToList();
@@ -161,7 +161,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     {
                         e.Created = DateTime.Now;
                         e.CreatedBy = CurrentUserEmail;
-                        e.MovieId = body.Id;
+                        e.MovieId = createMovie.Id;
 
                         return e;
                     }).ToList();

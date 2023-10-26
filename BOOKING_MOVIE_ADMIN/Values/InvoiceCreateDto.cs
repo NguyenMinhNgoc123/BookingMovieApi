@@ -13,7 +13,7 @@ namespace BOOKING_MOVIE_ADMIN.Values
         
         public string DiscountUnit { get; set; }
 
-        public decimal DiscountValue { get; set; }
+        public decimal? DiscountValue { get; set; }
 
         public string Note { get; set; }
 

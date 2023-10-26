@@ -3,14 +3,16 @@ using System;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BOOKING_MOVIE_MIGRATION.Migrations
 {
     [DbContext(typeof(movie_context))]
-    partial class movie_contextModelSnapshot : ModelSnapshot
+    [Migration("20231024192421_update_25_10")]
+    partial class update_25_10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,11 +294,11 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<bool?>("IsPaid");
 
-                    b.Property<long?>("MovieDateSettingId");
+                    b.Property<long?>("MovieDateSettingIds");
 
                     b.Property<long?>("MovieId");
 
-                    b.Property<long?>("MovieTimeSettingId");
+                    b.Property<long?>("MovieTimeSettingIds");
 
                     b.Property<string>("ObjectCode");
 

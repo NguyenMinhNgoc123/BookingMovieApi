@@ -22,7 +22,6 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual DbSet<MovieCategories> MovieCategories { get; set; }
         public virtual DbSet<MovieDirector> MovieDirectors { get; set; }
         public virtual DbSet<Photo> Photo { get; set; }
-        public virtual DbSet<Promotion> Promotion { get; set; }
         public virtual DbSet<Rate> Rate { get; set; }
         public virtual DbSet<Video> Video { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethod { get; set; }
@@ -37,7 +36,8 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual DbSet<InvoiceDetails> InvoiceDetails { get; set; }
         public virtual DbSet<Food> Food { get; set; }
         public virtual DbSet<ComboFood> ComboFood { get; set; }
-
+        public virtual DbSet<CustomerPromotion> CustomerPromotion { get; set; }
+        public virtual DbSet<Promotion> Promotion { get; set; }
 
         public void ResetTracker()
         {
