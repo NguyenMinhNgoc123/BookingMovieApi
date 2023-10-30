@@ -67,7 +67,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
             return OkList(data);
         }
-        
+
         [Authorize("User")]
         [HttpPost]
         public IActionResult CreateMovieAllUser([FromBody] Movie body)
@@ -209,6 +209,19 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             }
             
             return Ok();
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("popular")]
+        public IActionResult GetMoviePopular()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            return OkList(data);
         }
     }
 }

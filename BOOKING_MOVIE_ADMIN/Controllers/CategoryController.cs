@@ -25,7 +25,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _unitOfWork = unitOfWork;
         }
         
-        [Authorize("User")]
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult GetCategory()
         {
