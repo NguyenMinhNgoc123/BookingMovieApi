@@ -7,6 +7,7 @@ using BOOKING_MOVIE_ENTITY;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
@@ -68,10 +69,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
             return Ok(body);
         }
-        
-        [HttpPost]
-        [AllowAnonymous]
-        public IActionResult Register([FromBody] CustomerDto body)
+
+        [HttpPut("{id}")]
+        [Authorize("Customer")]
+        public IActionResult UpdateCustomer([FromRoute] long id, [FromBody] CustomerDto body)
         {
             if (!ModelState.IsValid)
             {
@@ -79,22 +80,30 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             }
             
             var userExist = _customer.GetAll()
-                .Where(o => o.Mobile == body.Mobile)
+                .AsNoTracking()
+                .Where(o => o.Id == id)
                 .FirstOrDefault();
 
-            if (userExist != null)
+            if (userExist == null)
             {
-                return BadRequest("CUSTOMER_EXIST");
+                return BadRequest("CUSTOMER_NOT_EXIST");
             }
 
-            body.CreatedBy = body.Email;
-            body.Status = OBJECT_STATUS.ENABLE;
-            body.Created = DateTime.Now;
-            body.PasswordHash = _auth.BCryptPasswordEncoder(body.Password);
+            body.UpdatedBy = CurrentUserEmail;
+            body.Updated = DateTime.Now;
+            if (body.Password != null) 
+            {
+                body.PasswordHash = _auth.BCryptPasswordEncoder(body.Password);
+            }
+            else
+            {
+                body.PasswordHash = userExist.PasswordHash;
+
+            }
             
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _customer.Add(body);
+                _customer.Update(body);
 
                 transaction.Commit();
             }
@@ -110,7 +119,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
+            var email = CurrentUserEmail;
+            var userId = CurrentCustomerId;
             var customer = _customer
                 .GetAll()
                 .Where(e => e.Id == id)
@@ -119,6 +130,48 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             if (customer == null)
             {
                 return NotFound();
+            }
+            
+            return Ok(customer);
+        }
+        
+        [HttpGet("profileLogin")]
+        [Authorize(Policy = "Customer")]
+        public IActionResult GetCustomer()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var customer = _customer
+                .GetAll()
+                .Where(e => e.Id == CurrentCustomerId)
+                .FirstOrDefault();
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(customer);
+        }
+        
+        [HttpGet("checkOldPassword/{oldPassword}")]
+        [Authorize(Policy = "Customer")]
+        public IActionResult GetCustomer([FromRoute] string oldPassword)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var customer = _auth.AuthenticateCustomer(CurrentUserEmail, oldPassword);
+
+
+            if (customer == null)
+            {
+                return BadRequest("PASSWORD_INCORRECT");
             }
             
             return Ok(customer);
@@ -154,6 +207,43 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             }
             
             return Ok(customer);
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Register([FromBody] CustomerDto body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var userExist = _customer.GetAll()
+                .Where(o => o.Email == body.Email)
+                .FirstOrDefault();
+
+            if (userExist != null)
+            {
+                return BadRequest("CUSTOMER_EXIST");
+            }
+
+            body.CreatedBy = body.Email;
+            body.Status = OBJECT_STATUS.ENABLE;
+            body.Created = DateTime.Now;
+            body.PasswordHash = _auth.BCryptPasswordEncoder(body.Password);
+            if (body.Mobile == null)
+            {
+                body.Mobile = body.Email;
+            }
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _customer.Add(body);
+
+                transaction.Commit();
+            }
+
+            return Ok(body);
         }
     }
 }

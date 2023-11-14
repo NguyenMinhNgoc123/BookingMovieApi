@@ -7,6 +7,10 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public const string DISABLE = "DISABLE";
     }
     
+    public static class MOBILE
+    {
+        public const string DEFAULT = "01234";
+    }
     public static class CLAIMUSER
     {
         public const string SUB = "sub";
@@ -19,6 +23,7 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public const string AUD = "aud";
         public const string NAMEIDENTIFIER = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
         public const string CURRENT_USER_ID = "userId";
+        public const string CURRENT_CUSTOMER_ID = "customerId";
         public const string IS_ADMIN_USER = "isAdminUser";
     }
     
@@ -38,5 +43,15 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     {
         public const string SUCCESS = "SUCCESS";
     }
+    public static class PHOTO
+    {
+        public const string POSTER_MOVIE = "POSTER_MOVIE";
+        public const string BACKDROP_MOVIE = "BACKDROP_MOVIE";
+        public const string PROFILE_ACTOR = "PROFILE_ACTOR";
+    }
     
+    public static class VIDEO
+    {
+        public const string MOVIE = "MOVIE";
+    }
 }

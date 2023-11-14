@@ -61,5 +61,21 @@ namespace BOOKING_MOVIE_ADMIN.Reponse
                 return JwtHelper.GetCurrentInformation(User, e => e.Type.Equals(CLAIMUSER.EMAILADDRESS));
             }
         }
+        
+        public long CurrentUserId
+        {
+            get
+            {
+                return JwtHelper.GetCurrentInformationLong(User, e => e.Type.Equals(CLAIMUSER.CURRENT_USER_ID));
+            }
+        }
+        
+        public long CurrentCustomerId
+        {
+            get
+            {
+                return JwtHelper.GetCurrentInformationLong(User, e => e.Type.Equals(CLAIMUSER.CURRENT_CUSTOMER_ID));
+            }
+        }
     }
 }

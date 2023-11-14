@@ -15,11 +15,11 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<Movie> Movie { get; set; }
-        public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Genre> Genre { get; set; }
         public virtual DbSet<Director> Director { get; set; }
         public virtual DbSet<Actor> Actor { get; set; }
         public virtual DbSet<MovieActor> MovieActors { get; set; }
-        public virtual DbSet<MovieCategories> MovieCategories { get; set; }
+        public virtual DbSet<MovieGenres> MovieGenres { get; set; }
         public virtual DbSet<MovieDirector> MovieDirectors { get; set; }
         public virtual DbSet<Photo> Photo { get; set; }
         public virtual DbSet<Rate> Rate { get; set; }

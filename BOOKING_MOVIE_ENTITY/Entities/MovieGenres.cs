@@ -2,13 +2,13 @@ using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
 {
-    public class MovieCategories : EntitieDate
+    public class MovieGenres : EntitieDate
     {
-        public long CategoryId { get; set; }
+        public long GenreId { get; set; }
         
         public long MovieId { get; set; }
         
-        public virtual Category Category { get; set; }
+        public virtual Genre Genre { get; set; }
         
         public virtual Movie Movie { get; set; }
 

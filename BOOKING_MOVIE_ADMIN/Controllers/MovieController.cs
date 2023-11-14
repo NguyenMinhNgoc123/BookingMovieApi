@@ -11,48 +11,54 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class MovieController : movieControllerBase
     {
         private readonly MovieServices _movie;
         private readonly UnitOfWork _unitOfWork;
         private readonly MovieActorServices _movieActor;
-        private readonly MovieCategoriesServices _movieCategories;
+        private readonly MovieGenresServices _movieGenres;
         private readonly MovieDirectorServices _movieDirector;
         private readonly MovieCinemaServices _movieCinema;
         private readonly MovieRoomServices _movieRoom;
         private readonly MovieDateSettingServices _movieDateSetting;
         private readonly ActorServices _actor;
-        private readonly CategoryServices _category;
+        private readonly GenreServices _genre;
         private readonly DirectorServices _director;
+        private readonly PhotoServices _photo;
+        private readonly VideoServices _video;
 
         public MovieController(
             MovieServices movieServices,
             UserServices userService,
             UnitOfWork unitOfWork,
             MovieActorServices movieActor,
-            MovieCategoriesServices movieCategories,
+            MovieGenresServices movieGenres,
             MovieDirectorServices movieDirector,
             MovieCinemaServices movieCinema,
             MovieRoomServices movieRoom,
             MovieDateSettingServices movieDateSetting,
             ActorServices actor,
-            CategoryServices category,
-            DirectorServices director
-            ) : base(userService)
+            GenreServices genre,
+            DirectorServices director,
+            PhotoServices photo,
+            VideoServices video
+        ) : base(userService)
         {
             _unitOfWork = unitOfWork;
             _movieActor = movieActor;
-            _movieCategories = movieCategories;
+            _movieGenres = movieGenres;
             _movieDirector = movieDirector;
             _movie = movieServices;
             _movieCinema = movieCinema;
             _movieRoom = movieRoom;
             _movieDateSetting = movieDateSetting;
             _actor = actor;
-            _category = category;
+            _genre = genre;
             _director = director;
+            _photo = photo;
+            _video = video;
         }
 
         [Authorize("User")]
@@ -88,10 +94,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 }
             }
             
-            if (body.MovieCategories.Count > 0)
+            if (body.MovieGenres.Count > 0)
             {
-                var movieCategoryIds = body.MovieCategories.Select(e => e.CategoryId).ToList();
-                var movieCategories = _category.GetAll().Where(e => movieCategoryIds.Contains(e.Id)).ToList();
+                var movieCategoryIds = body.MovieGenres.Select(e => e.GenreId).ToList();
+                var movieCategories = _genre.GetAll().Where(e => movieCategoryIds.Contains(e.Id)).ToList();
 
                 if (movieCategoryIds.Count() != movieCategories.Count)
                 {
@@ -102,7 +108,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             if (body.MovieDirectors.Count > 0)
             {
                 var movieDirectorIds = body.MovieDirectors.Select(e => e.DirectorId).ToList();
-                var movieDirector = _category.GetAll().Where(e => movieDirectorIds.Contains(e.Id)).ToList();
+                var movieDirector = _genre.GetAll().Where(e => movieDirectorIds.Contains(e.Id)).ToList();
 
                 if (movieDirectorIds.Count() != movieDirector.Count)
                 {
@@ -117,6 +123,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     Created = DateTime.Now,
                     CreatedBy = CurrentUserEmail,
                     Name = body.Name,
+                    Overview = body.Overview,
                     MovieStatus = body.MovieStatus,
                     YearOfRelease = body.YearOfRelease,
                     Time = body.Time,
@@ -141,10 +148,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     }).ToList();
                 }
 
-                var movieCategories = new List<MovieCategories>();
-                if (body.MovieCategories.Count > 0) 
+                var movieCategories = new List<MovieGenres>();
+                if (body.MovieGenres.Count > 0) 
                 {
-                    movieCategories = body.MovieCategories.Select(e =>
+                    movieCategories = body.MovieGenres.Select(e =>
                     {
                         e.Created = DateTime.Now;
                         e.CreatedBy = CurrentUserEmail;
@@ -155,7 +162,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 }
             
                 var movieDirector = new List<MovieDirector>();
-                if (body.MovieCategories.Count > 0) 
+                if (body.MovieGenres.Count > 0) 
                 {
                     movieDirector = body.MovieDirectors.Select(e =>
                     {
@@ -168,7 +175,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 }
                 
                 _movieActor.AddRange(movieActors);
-                _movieCategories.AddRange(movieCategories);
+                _movieGenres.AddRange(movieCategories);
                 _movieDirector.AddRange(movieDirector);
                 
                 _movieDateSetting.CreateMovieDateSettings(body.MovieDateSettings.ToList(), createMovie.Id, CurrentUserEmail);
@@ -210,10 +217,337 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             
             return Ok();
         }
+
+        [AllowAnonymous]
+        [HttpGet("movie/{id}")]
+        public IActionResult GetMovieDetail([FromRoute] long id)
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .Include(e => e.MovieActors)
+                .ThenInclude(e => e.Actor)
+                .Include(e => e.MovieGenres)
+                .ThenInclude(e => e.Genre)
+                .FirstOrDefault(e => e.Id == id);
+
+            if (data != null)
+            {
+                var posterPhotos = _photo.GetAll()
+                    .Where(e => e.ObjectId == data.Id)
+                    .Where(e => e.Type == PHOTO.POSTER_MOVIE || e.Type == PHOTO.BACKDROP_MOVIE)
+                    .ToList();
+
+                if (posterPhotos.Count > 0)
+                {
+                    data.PosterPhoto = posterPhotos.Where(e => e.Type == PHOTO.POSTER_MOVIE).FirstOrDefault(o => o.ObjectId == data.Id);
+                    data.BackdropPhoto = posterPhotos.Where(e => e.Type == PHOTO.BACKDROP_MOVIE).FirstOrDefault(o => o.ObjectId == data.Id);
+
+                }
+            }
+            
+            return Ok(data);
+        }
         
         [AllowAnonymous]
-        [HttpGet("popular")]
+        [HttpGet("movie/{id}/similar")]
+        public IActionResult GetMovieDetailSimilar([FromRoute] long id)
+        {
+            var movieGenres = _movieGenres.GetAll()
+                .Where(e => e.MovieId == id)
+                .Include(e => e.Genre)
+                .ToList();
+            var genreIds = movieGenres.Select(e => e.GenreId).ToList();
+
+            var data = _movie
+                .GetAll()
+                .Where(e => e.Id != id)
+                .Where(e => e.MovieGenres.Any(o => genreIds.Contains(o.GenreId)))
+                .AsNoTracking()
+                .Include(e => e.MovieActors)
+                .ThenInclude(e => e.Actor)
+                .Include(e => e.MovieGenres)
+                .ThenInclude(e => e.Genre)
+                .ToList();
+
+            if (data != null)
+            {
+                var movieIds = data.Select(e => e.Id);
+                var posterPhotos = _photo.GetAll()
+                    .Where(e => movieIds.Contains(e.ObjectId))
+                    .Where(e => e.Type == PHOTO.POSTER_MOVIE || e.Type == PHOTO.BACKDROP_MOVIE)
+                    .ToList();
+
+                if (posterPhotos.Count > 0)
+                {
+                    foreach (var elm in data)
+                    {
+                        elm.PosterPhoto = posterPhotos.Where(e => e.Type == PHOTO.POSTER_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                        elm.BackdropPhoto = posterPhotos.Where(e => e.Type == PHOTO.BACKDROP_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                    }
+                }
+            }
+            
+            return OkList(data);
+        }
+        
+        
+        [AllowAnonymous]
+        [HttpGet("movie/{id}/credits")]
+        public IActionResult GetMovieDetailCredits([FromRoute] long id)
+        {
+            var movieGenres = _movieActor.GetAll()
+                .Where(e => e.MovieId == id)
+                .Include(e => e.Actor)
+                .ToList();
+            var actorIds = movieGenres.Select(e => e.ActorId).ToList();
+
+            var data = _actor.GetAll().Where(e => actorIds.Contains(e.Id)).ToList();
+
+            if (data.Count > 0)
+            {
+                var profilePhoto = _photo.GetAll()
+                    .Where(e => actorIds.Contains(e.ObjectId))
+                    .Where(e => e.Type == PHOTO.PROFILE_ACTOR)
+                    .ToList();
+
+                if (profilePhoto.Count > 0)
+                {
+                    foreach (var elm in data)
+                    {
+                        elm.ProfilePhoto = profilePhoto.FirstOrDefault(o => o.ObjectId == elm.Id);
+                    }
+                }
+            }
+            
+            return OkList(data);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("movie/{id}/reviews")]
+        public IActionResult GetMovieDetailReview([FromRoute] long id)
+        {
+            var movieGenres = _movieGenres.GetAll()
+                .Where(e => e.MovieId == id)
+                .Include(e => e.Genre)
+                .ToList();
+            var genreIds = movieGenres.Select(e => e.GenreId).ToList();
+
+            var data = _movie
+                .GetAll()
+                .Where(e => e.Id != id)
+                .Where(e => e.MovieGenres.Any(o => genreIds.Contains(o.GenreId)))
+                .AsNoTracking()
+                .Include(e => e.MovieActors)
+                .ThenInclude(e => e.Actor)
+                .Include(e => e.MovieGenres)
+                .ThenInclude(e => e.Genre)
+                .ToList();
+
+            if (data != null)
+            {
+                var movieIds = data.Select(e => e.Id);
+                var posterPhotos = _photo.GetAll()
+                    .Where(e => movieIds.Contains(e.ObjectId))
+                    .Where(e => e.Type == PHOTO.POSTER_MOVIE || e.Type == PHOTO.BACKDROP_MOVIE)
+                    .ToList();
+
+                if (posterPhotos.Count > 0)
+                {
+                    foreach (var elm in data)
+                    {
+                        elm.PosterPhoto = posterPhotos.Where(e => e.Type == PHOTO.POSTER_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                        elm.BackdropPhoto = posterPhotos.Where(e => e.Type == PHOTO.BACKDROP_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                    }
+                }
+            }
+            
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("movie/{id}/videos")]
+        public IActionResult GetMovieDetailVideo([FromRoute] long id)
+        {
+            var data = _video
+                .GetAll()
+                .Where(e => e.ObjectId == id)
+                .Where(e => e.Type == VIDEO.MOVIE)
+                .AsNoTracking()
+                .ToList();
+
+            return OkList(data);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("movie/popular")]
         public IActionResult GetMoviePopular()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            var movieIds = data.Select(e => e.Id);
+            var posterPhotos = _photo.GetAll()
+                .Where(e => movieIds.Contains(e.ObjectId))
+                .Where(e => e.Type == PHOTO.POSTER_MOVIE)
+                .ToList();
+
+            if (posterPhotos.Count > 0)
+            {
+                foreach (var elm in data)
+                {
+                    elm.PosterPhoto = posterPhotos.FirstOrDefault(o => o.ObjectId == elm.Id);
+                }
+            }
+            
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("trending/all/day")]
+        public IActionResult GetMovieTrendingAllDay()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+            
+            _movie.AddPosterPhoto(data);
+
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("trending/movie/day")]
+        public IActionResult GetMovieTrendingMovieDay()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .Include(e => e.MovieGenres)
+                .ThenInclude(e => e.Genre)
+                .OrderByDescending(e => e.Created)
+                .ToList();
+            
+            var movieIds = data.Select(e => e.Id);
+            var posterPhotos = _photo.GetAll()
+                .Where(e => movieIds.Contains(e.ObjectId))
+                .Where(e => e.Type == PHOTO.BACKDROP_MOVIE || e.Type == PHOTO.POSTER_MOVIE)
+                .ToList();
+
+            if (posterPhotos.Count > 0)
+            {
+                foreach (var elm in data)
+                {
+                    elm.BackdropPhoto = posterPhotos.Where(e => e.Type == PHOTO.BACKDROP_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                    elm.PosterPhoto = posterPhotos.Where(e => e.Type == PHOTO.POSTER_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                }
+            }
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("movie/top_rated")]
+        public IActionResult GetMovieTopRated()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            var movieIds = data.Select(e => e.Id);
+            var posterPhotos = _photo.GetAll()
+                .Where(e => movieIds.Contains(e.ObjectId))
+                .Where(e => e.Type == PHOTO.POSTER_MOVIE)
+                .ToList();
+
+            if (posterPhotos.Count > 0)
+            {
+                foreach (var elm in data)
+                {
+                    elm.PosterPhoto = posterPhotos.FirstOrDefault(o => o.ObjectId == elm.Id);
+                }
+            }
+            
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("movie/upcoming")]
+        public IActionResult GetMovieUpcoming()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            _movie.AddPosterPhoto(data);
+            
+            return OkList(data);
+        }
+        
+        
+        [AllowAnonymous]
+        [HttpGet("tv/popular")]
+        public IActionResult GetTvPopular()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("tv/trending/all/day")]
+        public IActionResult GetTvTrendingAllDay()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("trending/tv/day")]
+        public IActionResult GetTvTrendingMovieDay()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("tv/on_the_air")]
+        public IActionResult GetTvOnTheAir()
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [AllowAnonymous]
+        [HttpGet("tv/top_rated")]
+        public IActionResult GetTvTopRated()
         {
             var data = _movie
                 .GetAll()

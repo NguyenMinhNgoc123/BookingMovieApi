@@ -35,6 +35,8 @@ namespace BOOKING_MOVIE_ADMIN
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UsePathBase("/1");
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

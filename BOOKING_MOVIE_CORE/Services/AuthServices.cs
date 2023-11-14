@@ -126,10 +126,10 @@ namespace BOOKING_MOVIE_CORE.Services
             return null;
         }
         
-        public Customer AuthenticateCustomer(string mobile, string password)
+        public Customer AuthenticateCustomer(string email, string password)
         {
             var customer = _customer.GetAll()
-                .Where(e => e.Mobile.ToUpper().Equals(mobile.Trim().ToUpper()))
+                .Where(e => e.Email.ToUpper().Equals(email.Trim().ToUpper()))
                 .FirstOrDefault();
 
             if (customer == null)

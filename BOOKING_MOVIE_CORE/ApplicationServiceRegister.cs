@@ -13,14 +13,14 @@ namespace BOOKING_MOVIE_CORE
             services.AddScoped<CustomerServices>();
             services.AddScoped<ActorServices>();
             services.AddScoped<DirectorServices>();
-            services.AddScoped<CategoryServices>();
+            services.AddScoped<GenreServices>();
             services.AddScoped<MovieServices>();
             services.AddScoped<CinemaServices>();
             services.AddScoped<InvoiceServices>();
             services.AddScoped<InvoicesDetailServices>();
             services.AddScoped<MovieActorServices>();
             services.AddScoped<RoomServices>();
-            services.AddScoped<MovieCategoriesServices>();
+            services.AddScoped<MovieGenresServices>();
             services.AddScoped<MovieDirectorServices>();
             services.AddScoped<MovieCinemaServices>();
             services.AddScoped<MovieRoomServices>();
@@ -29,6 +29,8 @@ namespace BOOKING_MOVIE_CORE
             services.AddScoped<PaymentMethodServices>();
             services.AddScoped<InvoicePaymentServices>();
             services.AddScoped<PromotionServices>();
+            services.AddScoped<PhotoServices>();
+            services.AddScoped<VideoServices>();
         }
 
     }

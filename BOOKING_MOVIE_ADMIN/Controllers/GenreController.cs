@@ -10,33 +10,44 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
-    [Route("[controller]")]
-    public class CategoryController : movieControllerBase
+    [Route("Genre")]
+    public class GenreController : movieControllerBase
     {
-        private readonly CategoryServices _category;
+        private readonly GenreServices _genre;
         private readonly UnitOfWork _unitOfWork;
                 
-        public CategoryController(
-            CategoryServices category,
+        public GenreController(
+            GenreServices genre,
             UnitOfWork unitOfWork,
             UserServices userService) : base(userService)
         {
-            _category = category;
+            _genre = genre;
             _unitOfWork = unitOfWork;
         }
         
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult GetCategory()
+        public IActionResult GetGenre()
         {
-            var data = _category.GetAll().AsNoTracking().ToList();
+            var data = _genre.GetAll().AsNoTracking().ToList();
 
             return OkList(data);
         }
+        
+        
+        [AllowAnonymous]
+        [HttpGet("movie/list")]
+        public IActionResult GetGenreMovieList()
+        {
+            var data = _genre.GetAll().AsNoTracking().ToList();
+
+            return OkList(data);
+        }
+        
 
         [Authorize("User")]
         [HttpPost]
-        public IActionResult CreateCategory([FromBody] Category body)
+        public IActionResult CreateGenre([FromBody] Genre body)
         {
             if (!ModelState.IsValid)
             {
@@ -49,7 +60,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _category.Add(body);
+                _genre.Add(body);
                 transaction.Commit();
             }
             
@@ -58,21 +69,21 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         
         [Authorize("User")]
         [HttpPut("{id}")]
-        public IActionResult UpdateCategory([FromRoute] long id,[FromBody] Category body)
+        public IActionResult UpdateGenre([FromRoute] long id,[FromBody] Genre body)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var category = _category.GetAll()
+            var genre = _genre.GetAll()
                 .Where(e => e.Id == id)
                 .AsNoTracking()
                 .FirstOrDefault();
 
-            if (category == null)
+            if (genre == null)
             {
-                return BadRequest("category_NOT_EXIST");
+                return BadRequest("genre_NOT_EXIST");
             }
             
             body.Updated = DateTime.Now;
@@ -80,7 +91,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _category.Update(body);
+                _genre.Update(body);
                 transaction.Commit();
             }
             
@@ -89,29 +100,29 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         
         [Authorize("User")]
         [HttpDelete("{id}")]
-        public IActionResult DeleteCategory([FromRoute] long id)
+        public IActionResult DeleteGenre([FromRoute] long id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var category = _category.GetAll()
+            var genre = _genre.GetAll()
                 .Where(e => e.Id == id)
                 .FirstOrDefault();
 
-            if (category == null)
+            if (genre == null)
             {
-                return BadRequest("category_NOT_EXIST");
+                return BadRequest("genre_NOT_EXIST");
             }
             
-            category.Updated = DateTime.Now;
-            category.UpdatedBy = CurrentUserEmail;
-            category.Status = OBJECT_STATUS.DELETED;
+            genre.Updated = DateTime.Now;
+            genre.UpdatedBy = CurrentUserEmail;
+            genre.Status = OBJECT_STATUS.DELETED;
             
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _category.Update(category);
+                _genre.Update(genre);
                 transaction.Commit();
             }
             

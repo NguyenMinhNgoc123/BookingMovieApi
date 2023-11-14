@@ -53,7 +53,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 return BadRequest(ModelState);
             }
             
-            var customer = _auth.AuthenticateCustomer(login.Mobile, login.Password);
+            var customer = _auth.AuthenticateCustomer(login.Email, login.Password);
 
             if (customer != null)
             {
