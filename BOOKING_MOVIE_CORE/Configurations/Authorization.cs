@@ -19,15 +19,6 @@ namespace BOOKING_MOVIE_CORE.Configurations
                 options.AddPolicy("User", policy => { policy.RequireClaim("userId"); });
 
                 options.AddPolicy("Customer", policy => { policy.RequireClaim("customerId"); });
-
-                options.AddPolicy("UserOrCustomer", policy =>
-                {
-                    policy.RequireAssertion(context =>
-                    {
-                        return context.User.HasClaim(c =>
-                            (c.Type == "customerId" || c.Type == "userId"));
-                    });
-                });
             });
         }
 

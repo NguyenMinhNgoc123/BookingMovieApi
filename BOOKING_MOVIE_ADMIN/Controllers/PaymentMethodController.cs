@@ -28,7 +28,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Customer")]
         public IActionResult GetPaymentMethod()
         {
             var data = _paymentMethod

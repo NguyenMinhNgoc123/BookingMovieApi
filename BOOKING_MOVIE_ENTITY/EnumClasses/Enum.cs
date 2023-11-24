@@ -54,4 +54,10 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     {
         public const string MOVIE = "MOVIE";
     }
+    
+    public static class DISCOUNT_UNIT
+    {
+        public const string PERCENT = "PERCENT";
+        public const string MONEY = "MONEY";
+    }
 }

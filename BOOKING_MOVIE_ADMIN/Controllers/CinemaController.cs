@@ -25,16 +25,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _unitOfWork = unitOfWork;
         }
         
-        [Authorize("User")]
+        
         [HttpGet]
-        public IActionResult GetCinema()
+        [Authorize(Policy = "Customer")]
+        public IActionResult GetCinemaCustomer()
         {
             var data = _cinema.GetAll().AsNoTracking().ToList();
 
             return OkList(data);
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "Customer")]
         [HttpPost]
         public IActionResult CreateCinema([FromBody] Cinema body)
         {
@@ -56,7 +57,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return Ok();
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "Customer")]
         [HttpPut("{id}")]
         public IActionResult UpdateCinema([FromRoute] long id, [FromBody] Cinema body)
         {
@@ -87,7 +88,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return Ok();
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "Customer")]
         [HttpDelete("{id}")]
         public IActionResult DeleteCinema([FromRoute] long id)
         {

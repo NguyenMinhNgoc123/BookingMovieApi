@@ -15,23 +15,47 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
     {
         private readonly RoomServices _room;
         private readonly UnitOfWork _unitOfWork;
+        private readonly MovieRoomServices _movieRoom;
 
         public RoomController(
             RoomServices room,
             UnitOfWork unitOfWork,
+            MovieRoomServices movieRoom,
             UserServices userService) : base(userService)
         {
             _room = room;
             _unitOfWork = unitOfWork;
+            _movieRoom = movieRoom;
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "Customer")]
         [HttpGet]
-        public IActionResult GetRoom()
+        public IActionResult GetRoom([FromQuery] long? cinemaId, [FromQuery] long? movieId, [FromQuery] string time)
         {
-            var data = _room.GetAll().AsNoTracking().ToList();
+            var data = _movieRoom.GetAll().AsNoTracking();
 
-            return OkList(data);
+            if (cinemaId != null)
+            {
+                data = data.Where(e => e.MovieCinema.CinemaId == cinemaId);
+            }
+
+            if (time != null)
+            {
+                data = data.Where(e => e.MovieTimeSettings.Any(o => o.Time == time));
+            }
+            
+            if (movieId != null)
+            {
+                data = data.Where(e => e.MovieCinema.MovieDateSetting.MovieId == movieId);
+            }
+
+            var room = data
+                .Include(e => e.Room)
+                .Include(e => e.MovieCinema)
+                .ThenInclude(e => e.Cinema)
+                .ToList();
+            
+            return OkList(room);
         }
 
         [Authorize("User")]

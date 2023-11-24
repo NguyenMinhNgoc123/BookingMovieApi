@@ -8,6 +8,7 @@ using BOOKING_MOVIE_ENTITY;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
@@ -39,7 +40,6 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _invoicePayment = invoicePayment;
         }
 
-        [Authorize("User")]
         [HttpGet]
         public IActionResult GetUser(string keyword = "", string type = "MANAGEMENT")
         {
@@ -49,7 +49,22 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return OkList(data);
         }
         
-        [Authorize("UserOrCustomer")]
+        [Authorize(Policy = "Customer")]
+        [HttpGet("code/{code}")]
+        public IActionResult GetInvoiceCode([FromRoute] string code)
+        {
+            var data = _invoice.GetAll()
+                .AsNoTracking()
+                .Where(e => e.Code == code)
+                .Where(e => e.CustomerId == CurrentCustomerId)
+                .Include(e => e.InvoiceDetails)
+                .Include(e => e.InvoicePayment)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [Authorize(Policy = "Customer")]
         [HttpPost]
         public IActionResult CreateInvoice([FromBody] InvoiceCreateDto body)
         {
@@ -69,7 +84,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             }
 
             var currentDateTimeNow = DateTime.Now;
-            var promotionInvoiceDetailIds = body.InvoiceDetails.Select(e => e.PromotionId).ToList();
+            var promotionInvoiceDetailIds = body.InvoiceDetails
+                .Where(e => e.PromotionId != null)
+                .Select(e => e.PromotionId)
+                .ToList();
 
             var promotions = new List<Promotion>();
             if (promotionInvoiceDetailIds.Count > 0)
@@ -102,8 +120,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     ObjectName = e.ObjectName,
                     ObjectCode = e.ObjectCode,
                     ObjectPrice = e.ObjectPrice,
-                    DiscountUnit = promotion?.DiscountUnit,
-                    DiscountValue = promotion?.DiscountValue,
+                    DiscountUnit = promotion?.DiscountUnit != null ? promotion?.DiscountUnit : DISCOUNT_UNIT.PERCENT ,
+                    DiscountValue = promotion?.DiscountValue ?? 0,
                     Total = total,
                     Quantity = e.Quantity,
                     PromotionId = e.PromotionId,

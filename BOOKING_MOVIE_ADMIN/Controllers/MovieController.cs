@@ -61,7 +61,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _video = video;
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "User")]
         [HttpGet]
         public IActionResult GetMovieAllUser()
         {
@@ -74,7 +74,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return OkList(data);
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "User")]
         [HttpPost]
         public IActionResult CreateMovieAllUser([FromBody] Movie body)
         {
@@ -186,7 +186,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return Ok();
         }
 
-        [Authorize("User")]
+        [Authorize(Policy = "User")]
         [HttpDelete("{id}")]
         public IActionResult CreateMovieAllUser([FromRoute] long id,[FromBody] Movie body)
         {
@@ -218,6 +218,42 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "Customer")]
+        [HttpGet("movieBooking")]
+        public IActionResult GetMovieBooking([FromQuery] long? cinemaId)
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking();
+
+            if (cinemaId != null)
+            {
+                data.Where(e => e.MovieDateSettings.Any(elm => elm.MovieCinemas.Any(o => o.CinemaId == cinemaId)));
+            }
+            
+            var movies = data.OrderByDescending(e => e.Created).ToList();
+            
+            if (movies.Count > 0)
+            {
+                var movieIds = movies.Select(e => e.Id);
+                var posterPhotos = _photo.GetAll()
+                    .Where(e => movieIds.Contains(e.ObjectId))
+                    .Where(e => e.Type == PHOTO.POSTER_MOVIE || e.Type == PHOTO.BACKDROP_MOVIE)
+                    .ToList();
+
+                if (posterPhotos.Count > 0)
+                {
+                    foreach (var elm in movies)
+                    {
+                        elm.PosterPhoto = posterPhotos.Where(e => e.Type == PHOTO.POSTER_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                        elm.BackdropPhoto = posterPhotos.Where(e => e.Type == PHOTO.BACKDROP_MOVIE).FirstOrDefault(o => o.ObjectId == elm.Id);
+                    }
+                }
+            }
+            
+            return OkList(movies);
+        }
+        
         [AllowAnonymous]
         [HttpGet("movie/{id}")]
         public IActionResult GetMovieDetail([FromRoute] long id)
