@@ -27,7 +27,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpGet]
-        [Authorize(Policy = "Customer")]
+        [Authorize(Policy = "User")]
         public IActionResult GetFood()
         {
             var data = _food.GetAll().AsNoTracking().ToList();
@@ -36,7 +36,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpPost]
-        [Authorize(Policy = "Customer")]
+        [Authorize(Policy = "User")]
         public IActionResult PostFood([FromBody] Food body)
         {
             if (!ModelState.IsValid)
@@ -84,6 +84,15 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             }
             
             return Ok();
+        }
+
+        [Authorize(Policy = "Customer")]
+        [HttpGet("booking")]
+        public IActionResult GetFoodCustomerBooking()
+        {
+            var data = _food.GetAll().AsNoTracking().ToList();
+
+            return OkList(data);
         }
     }
 }

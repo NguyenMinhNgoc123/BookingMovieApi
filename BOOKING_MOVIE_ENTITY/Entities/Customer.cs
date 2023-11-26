@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -22,5 +23,8 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public long CurrentLoyaltyPoint { get; set; } = 0;
         
         public string PasswordHash { get; set; }
+        
+        [NotMapped]
+        public string ProfilePhoto { get; set; }
     }
 }

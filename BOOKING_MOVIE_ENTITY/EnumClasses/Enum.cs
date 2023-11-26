@@ -48,6 +48,7 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public const string POSTER_MOVIE = "POSTER_MOVIE";
         public const string BACKDROP_MOVIE = "BACKDROP_MOVIE";
         public const string PROFILE_ACTOR = "PROFILE_ACTOR";
+        public const string PROFILE_CUSTOMER = "PROFILE_CUSTOMER";
     }
     
     public static class VIDEO
@@ -59,5 +60,14 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     {
         public const string PERCENT = "PERCENT";
         public const string MONEY = "MONEY";
+    }
+    
+    
+    public static class SORT_BY
+    {
+        public const string POPULARITY = "POPULARITY";
+        public const string RATING = "RATING";
+        public const string MOST_RECENT = "MOST_RECENT";
+
     }
 }

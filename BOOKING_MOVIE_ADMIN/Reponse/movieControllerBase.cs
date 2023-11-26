@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BOOKING_MOVIE_ADMIN.Values;
@@ -23,12 +24,16 @@ namespace BOOKING_MOVIE_ADMIN.Reponse
 
         public OkObjectResult OkList<T>(List<T> rs, int? count = null)
         {
+            var totalItem = count != null ? count.Value : rs.Count();
+            var totalPage = Math.Ceiling((decimal)totalItem / RowPerPage);
+
             var response = new ActionResultValue()
             {
                 Data = rs,
                 Meta = new ActionResultMeta
                 {
                     TotalItem = count != null ? count.Value : rs.Count(),
+                    TotalPage = (int)totalPage,
                     CurrentPage = Page,
                     RowPerPage = RowPerPage,
                 }

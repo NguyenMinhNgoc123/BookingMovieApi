@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using BOOKING_MOVIE_ADMIN.Reponse;
 using BOOKING_MOVIE_CORE.Services;
@@ -28,6 +29,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         private readonly DirectorServices _director;
         private readonly PhotoServices _photo;
         private readonly VideoServices _video;
+        private readonly InvoicesDetailServices _invoicesDetail;
 
         public MovieController(
             MovieServices movieServices,
@@ -43,7 +45,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             GenreServices genre,
             DirectorServices director,
             PhotoServices photo,
-            VideoServices video
+            VideoServices video,
+            InvoicesDetailServices invoicesDetail
         ) : base(userService)
         {
             _unitOfWork = unitOfWork;
@@ -59,6 +62,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _director = director;
             _photo = photo;
             _video = video;
+            _invoicesDetail = invoicesDetail;
         }
 
         [Authorize(Policy = "User")]
@@ -591,6 +595,133 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 .OrderByDescending(e => e.Created)
                 .ToList();
 
+            return OkList(data);
+        }
+        
+        
+        [AllowAnonymous]
+        [HttpGet("movie/search/{keyword}")]
+        public IActionResult GetSearchMulti([FromRoute] string keyword, [FromQuery] string query)
+        {
+            var movies = _movie
+                .GetAll()
+                .AsNoTracking();
+
+            if (query != null)
+            {
+                movies = movies.Where(e => EF.Functions.Like(e.Name, $"%{query}%") ||
+                                           EF.Functions.Like(e.Country, $"%{query}%") ||
+                                           EF.Functions.Like(e.Description, $"%{query}%") ||
+                                           e.MovieActors.Any(o => EF.Functions.Like(o.Actor.Name, $"%{query}%")) ||
+                                           e.MovieDirectors.Any(elm =>
+                                               EF.Functions.Like(elm.Director.Name, $"%{query}%")) ||
+                                           e.MovieGenres.Any(elm => EF.Functions.Like(elm.Genre.Name, $"%{query}%"))
+                );
+            }
+
+            if (keyword != "multi" && keyword != "keyword" && keyword != null)
+            {
+                movies = movies.Where(e => e.MovieGenres.Any(elm => elm.Genre.Id == Int64.Parse(keyword)));
+            }
+
+            var data = movies
+                .OrderByDescending(e => e.Created)
+                .ToList();
+            
+            var movieIds = data.Select(e => e.Id);
+            var posterPhotos = _photo.GetAll()
+                .Where(e => movieIds.Contains(e.ObjectId))  
+                .Where(e => e.Type == PHOTO.POSTER_MOVIE)
+                .ToList();
+
+            if (posterPhotos.Count > 0)
+            {
+                foreach (var elm in data)
+                {
+                    elm.PosterPhoto = posterPhotos.FirstOrDefault(o => o.ObjectId == elm.Id);
+                }
+            }
+            
+            return OkList(data);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("movie/discover")]
+        public IActionResult GetDiscoverMovie([FromQuery] string query, [FromQuery] string sortBy, [FromQuery] string startReleaseDate)
+        {
+            var movies = _movie
+                .GetAll()
+                .AsNoTracking();
+
+            if (startReleaseDate != null)
+            {
+                string inputFormat = "yyyy-MM-dd";
+                DateTime parsedDate = DateTime.ParseExact(startReleaseDate, inputFormat, CultureInfo.InvariantCulture);
+
+                movies = movies.Where(e => e.ReleaseDate >= parsedDate);
+            }
+            
+            if (query != null)
+            {
+                movies = movies.Where(e => EF.Functions.Like(e.Name, $"%{query}%") ||
+                                           EF.Functions.Like(e.Country, $"%{query}%") ||
+                                           EF.Functions.Like(e.Description, $"%{query}%") ||
+                                           e.MovieActors.Any(o => EF.Functions.Like(o.Actor.Name, $"%{query}%")) ||
+                                           e.MovieDirectors.Any(elm =>
+                                               EF.Functions.Like(elm.Director.Name, $"%{query}%")) ||
+                                           e.MovieGenres.Any(elm => EF.Functions.Like(elm.Genre.Name, $"%{query}%"))
+                );
+            }
+
+            if (sortBy == SORT_BY.POPULARITY)
+            {
+                var invoiceDetails = _invoicesDetail
+                    .GetAll()
+                    .GroupBy(detail => detail.MovieId)
+                    .Select(group => new
+                    {
+                        MovieId = group.Key,
+                        Numb = group.Count()
+                    })
+                    .OrderByDescending(item => item.Numb)
+                    .ToList();
+
+                var movieIdInvoiceDetails = invoiceDetails.Select(e => e.MovieId).ToList();
+                movies = movies.OrderByDescending(e => movieIdInvoiceDetails.IndexOf(e.Id));
+            }
+
+            if (sortBy == SORT_BY.RATING)
+            {
+                movies = movies.OrderByDescending(e => e.Rate);
+            }
+            
+            if (sortBy == SORT_BY.MOST_RECENT)
+            {
+                movies = movies.OrderByDescending(e => e.ReleaseDate);
+            }
+
+            if (sortBy == null)
+            {
+                movies = movies.OrderByDescending(e => e.Created);
+            }
+            
+            var data = movies
+                .ToList();
+            
+            var movieIds = data.Select(e => e.Id);
+            var posterPhotos = _photo.GetAll()
+                .Where(e => movieIds.Contains(e.ObjectId))
+                .Where(e => e.Type == PHOTO.POSTER_MOVIE)
+                .ToList();
+
+            if (posterPhotos.Count > 0)
+            {
+                foreach (var elm in data)
+                {
+                    elm.PosterPhoto = posterPhotos.FirstOrDefault(o => o.ObjectId == elm.Id);
+                }
+            }
+            
             return OkList(data);
         }
     }

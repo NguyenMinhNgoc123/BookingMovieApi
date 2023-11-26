@@ -14,15 +14,18 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
     [Route("[controller]")]
     public class CustomerController : movieControllerBase
     {
-        public readonly CustomerServices _customer;
-        public readonly AuthServices _auth;
-        public readonly UnitOfWork _unitOfWork;
+        private readonly CustomerServices _customer;
+        private readonly AuthServices _auth;
+        private readonly UnitOfWork _unitOfWork;
+        private readonly PhotoServices _photo;
         public CustomerController(
             CustomerServices customerServices,
             AuthServices authServices,
             UnitOfWork unitOfWork,
+            PhotoServices photo,
             UserServices userService) : base(userService)
         {
+            _photo = photo;
             _customer = customerServices;
             _auth = authServices;
             _unitOfWork = unitOfWork;
@@ -153,6 +156,16 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             {
                 return NotFound();
             }
+
+            var profilePhoto = _photo.GetAll()
+                .Where(e => e.ObjectId == customer.Id)
+                .Where(e => e.Type == PHOTO.PROFILE_CUSTOMER)
+                .FirstOrDefault();
+
+                if (profilePhoto != null)
+                {
+                    customer.ProfilePhoto = profilePhoto.url;
+                }
             
             return Ok(customer);
         }
@@ -239,6 +252,53 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             using (var transaction = _unitOfWork.BeginTransaction())
             {
                 _customer.Add(body);
+
+                transaction.Commit();
+            }
+
+            return Ok(body);
+        }
+        
+        [HttpPut("updateImage/{id}")]
+        [Authorize("Customer")]
+        public IActionResult UpdateImageCustomer([FromRoute] long id, [FromBody] Photo body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var userExist = _customer.GetAll()
+                .AsNoTracking()
+                .Where(o => o.Id == id)
+                .FirstOrDefault();
+
+            if (userExist == null)
+            {
+                return BadRequest("CUSTOMER_NOT_EXIST");
+            }
+
+            var oldImage = _photo.GetAll()
+                .Where(e => e.ObjectId == id)
+                .Where(e => e.Type == PHOTO.PROFILE_CUSTOMER)
+                .FirstOrDefault();
+
+            body.UpdatedBy = CurrentUserEmail;
+            body.Updated = DateTime.Now;
+            body.Status = OBJECT_STATUS.ENABLE;
+            body.Type = PHOTO.PROFILE_CUSTOMER;
+            body.url = body.url;
+            body.ObjectId = CurrentCustomerId;
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                if (oldImage != null)
+                {
+                    oldImage.Status = OBJECT_STATUS.DELETED;
+                    _photo.Update(oldImage);
+                }
+                
+                _photo.Update(body);
 
                 transaction.Commit();
             }
