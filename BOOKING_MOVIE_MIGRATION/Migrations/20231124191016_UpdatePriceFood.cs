@@ -8,10 +8,10 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<decimal>(
-                name: "Price",
-                table: "Food",
-                nullable: false);
+            // migrationBuilder.AddColumn<decimal>(
+            //     name: "Price",
+            //     table: "Food",
+            //     nullable: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

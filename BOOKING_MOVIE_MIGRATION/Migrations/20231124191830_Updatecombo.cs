@@ -38,20 +38,6 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-            
-            migrationBuilder.DropForeignKey(
-                name: "FK_InvoiceDetails_Food_FoodId",
-                table: "ComboFood"
-            );
-            
-            migrationBuilder.DropColumn(
-                name: "FoodId",
-                table: "ComboFood");
-            
-            migrationBuilder.AddColumn<decimal>(
-                name: "Price",
-                table: "ComboFood",
-                nullable: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
