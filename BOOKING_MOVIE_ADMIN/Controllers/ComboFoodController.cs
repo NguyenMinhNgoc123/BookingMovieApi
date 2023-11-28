@@ -34,12 +34,13 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpGet]
-        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Customer")]
         public IActionResult GetComboFood()
         {
             var data = _comboFood
                 .GetAll()
                 .Include(e => e.Combos)
+                .ThenInclude(e => e.Food)
                 .OrderByDescending(e => e.Created)
                 .AsNoTracking()
                 .ToList();

@@ -27,7 +27,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [HttpGet]
-        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Customer")]
         public IActionResult GetFood()
         {
             var data = _food.GetAll().AsNoTracking().ToList();
