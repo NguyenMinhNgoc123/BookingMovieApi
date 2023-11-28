@@ -79,7 +79,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
 
         [Authorize(Policy = "User")]
-        [HttpPost]
+        [HttpPost("Movie")]
         public IActionResult CreateMovieAllUser([FromBody] Movie body)
         {
             if (!ModelState.IsValid)
@@ -126,6 +126,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 {
                     Created = DateTime.Now,
                     CreatedBy = CurrentUserEmail,
+                    Status = OBJECT_STATUS.ENABLE,
                     Name = body.Name,
                     Overview = body.Overview,
                     MovieStatus = body.MovieStatus,
@@ -497,6 +498,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             var data = _movie
                 .GetAll()
                 .AsNoTracking()
+                .Where(e => e.Rate >= 8)
                 .OrderByDescending(e => e.Created)
                 .ToList();
 
@@ -524,6 +526,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             var data = _movie
                 .GetAll()
                 .AsNoTracking()
+                .Where(e => e.ReleaseDate >= DateTime.Now)
                 .OrderByDescending(e => e.Created)
                 .ToList();
 
@@ -647,7 +650,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
         [AllowAnonymous]
         [HttpGet("movie/discover")]
-        public IActionResult GetDiscoverMovie([FromQuery] string query, [FromQuery] string sortBy, [FromQuery] string startReleaseDate)
+        public IActionResult GetDiscoverMovie([FromQuery] string query, [FromQuery] string sortBy, [FromQuery] string startReleaseDate, [FromQuery] string withGenres)
         {
             var movies = _movie
                 .GetAll()
@@ -672,7 +675,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                                            e.MovieGenres.Any(elm => EF.Functions.Like(elm.Genre.Name, $"%{query}%"))
                 );
             }
+            
+            if (withGenres != null)
+            {
+                string[] stringArray = withGenres.Split(',');
 
+                long[] genresParams = Array.ConvertAll(stringArray, long.Parse);
+
+                movies = movies.Where(e => e.MovieGenres.Any(o => genresParams.Contains(o.GenreId)));
+            }
+
+            
             if (sortBy == SORT_BY.POPULARITY)
             {
                 var invoiceDetails = _invoicesDetail
