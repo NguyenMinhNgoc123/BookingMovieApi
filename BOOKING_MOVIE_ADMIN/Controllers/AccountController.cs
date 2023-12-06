@@ -24,7 +24,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 return BadRequest(ModelState);
             }
             
-            var user = _auth.Authenticate(login.Username, login.Password);
+            var user = _auth.Authenticate(login.Email, login.Password);
 
             if (user != null)
             {
@@ -34,7 +34,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     token = tokenString.Token,
                     expTokenDate = (int)TimeSpan.FromDays(999).TotalDays,
                     expRefreshTokenDate = (int)TimeSpan.FromDays(999).TotalDays,
-                    refreshToken = tokenString.RefreshToken
+                    refreshToken = tokenString.RefreshToken,
+                    user = user
                 });
             }
 
