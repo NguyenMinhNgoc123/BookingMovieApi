@@ -50,19 +50,19 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             return OkList(data);
         }
         
-        [Authorize(Policy = "User")]
-        [HttpGet]
-        public IActionResult GetSumInvoice()
-        {
-            var data = _invoice.GetAll()
-                .Include(e => e.InvoiceDetails)
-                .Include(e => e.InvoicePayment)
-                .Include(e => e.Customer)
-                .Include(e => e.Promotion)
-                .FirstOrDefault();
-
-            return Ok(data);
-        }
+        // [Authorize(Policy = "User")]
+        // [HttpGet]
+        // public IActionResult GetSumInvoice()
+        // {
+        //     var data = _invoice.GetAll()
+        //         .Include(e => e.InvoiceDetails)
+        //         .Include(e => e.InvoicePayment)
+        //         .Include(e => e.Customer)
+        //         .Include(e => e.Promotion)
+        //         .FirstOrDefault();
+        //
+        //     return Ok(data);
+        // }
         
         [Authorize(Policy = "User")]
         [HttpGet("{id}")]
