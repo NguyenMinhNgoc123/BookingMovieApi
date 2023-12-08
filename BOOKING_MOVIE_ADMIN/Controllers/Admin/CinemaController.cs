@@ -35,6 +35,28 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             return OkList(data);
         }
         
+        [Authorize(Policy = "User")]
+        [HttpPost]
+        public IActionResult CreateCinema([FromBody] Cinema body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            body.Created = DateTime.Now;
+            body.CreatedBy = CurrentUserEmail;
+            body.Status = OBJECT_STATUS.ENABLE;
+
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _cinema.Add(body);
+                transaction.Commit();
+            }
+
+            return Ok();
+        }
+        
         [HttpGet("{id}")]
         [Authorize(Policy = "User")]
         public IActionResult GetCinemaCustomer([FromRoute] long id)
