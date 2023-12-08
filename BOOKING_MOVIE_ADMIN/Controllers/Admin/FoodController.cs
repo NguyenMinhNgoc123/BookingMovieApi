@@ -10,117 +10,116 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
 {
-    [Route("Admin/Actor")]
-    public class ActorController : movieControllerBase
+    [Route("Admin/Food")]
+    [ApiController]
+    public class FoodController : movieControllerBase
     {
-        private readonly ActorServices _actor;
+        private readonly FoodServices _food;
         private readonly UnitOfWork _unitOfWork;
-                
-        public ActorController(
-            ActorServices actor,
+
+        public FoodController(
+            FoodServices food,
             UnitOfWork unitOfWork,
             UserServices userService) : base(userService)
         {
-            _actor = actor;
+            _food = food;
             _unitOfWork = unitOfWork;
         }
-        
-        [Authorize(Policy = "User")]
+
         [HttpGet]
-        public IActionResult GetActor()
+        [Authorize(Policy = "User")]
+        public IActionResult GetFood()
         {
-            var data = _actor.GetAll().AsNoTracking().ToList();
+            var data = _food.GetAll().AsNoTracking().ToList();
 
             return OkList(data);
         }
         
-        [Authorize(Policy = "User")]
+        
         [HttpGet("{id}")]
-        public IActionResult GetActor([FromRoute] long id)
+        public IActionResult GetFoodCustomerDetail([FromRoute] long id)
         {
-            var data = _actor.GetAll().AsNoTracking().FirstOrDefault(e => e.Id == id);
+            var data = _food.GetAll().AsNoTracking().FirstOrDefault(e => e.Id == id);
 
             return Ok(data);
         }
-        
-        [Authorize(Policy = "User")]
+
         [HttpPost]
-        public IActionResult CreateActor([FromBody] Actor body)
+        [Authorize(Policy = "User")]
+        public IActionResult PostFood([FromBody] Food body)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             body.Created = DateTime.Now;
             body.CreatedBy = CurrentUserEmail;
             body.Status = OBJECT_STATUS.ENABLE;
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _actor.Add(body);
+                _food.Add(body);
                 transaction.Commit();
             }
-            
+
             return Ok();
         }
-        
-        [Authorize(Policy = "User")]
+
         [HttpPut("{id}")]
-        public IActionResult UpdateActor([FromRoute] long id,[FromBody] Actor body)
+        [Authorize(Policy = "User")]
+        public IActionResult PutFood([FromRoute] long id, [FromBody] Food body)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var actor = _actor.GetAll()
-                .Where(e => e.Id == id)
-                .AsNoTracking()
-                .FirstOrDefault();
-
-            if (actor == null)
+            var oldFood = _food.GetAll().FirstOrDefault(e => e.Id == id);
+            if (oldFood == null)
             {
-                return BadRequest("ACTOR_NOT_EXIST");
+                return BadRequest();
             }
-            
-            body.Updated = DateTime.Now;
-            body.UpdatedBy = CurrentUserEmail;
+
+            oldFood.Updated = DateTime.Now;
+            oldFood.UpdatedBy = CurrentUserEmail;
+            oldFood.Price = body.Price;
+            oldFood.Name = body.Name;
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _actor.Update(body);
+                _food.Update(oldFood);
                 transaction.Commit();
             }
-            
+
             return Ok();
         }
         
         [Authorize(Policy = "User")]
         [HttpDelete("{id}")]
-        public IActionResult DeleteActor([FromRoute] long id)
+        public IActionResult DeleteFood([FromRoute] long id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var actor = _actor.GetAll()
+            var genre = _food.GetAll()
                 .Where(e => e.Id == id)
                 .FirstOrDefault();
 
-            if (actor == null)
+            if (genre == null)
             {
-                return BadRequest("ACTOR_NOT_EXIST");
+                return BadRequest("FOOD_NOT_EXIST");
             }
             
-            actor.Updated = DateTime.Now;
-            actor.UpdatedBy = CurrentUserEmail;
-            actor.Status = OBJECT_STATUS.DELETED;
+            genre.Updated = DateTime.Now;
+            genre.UpdatedBy = CurrentUserEmail;
+            genre.Status = OBJECT_STATUS.DELETED;
             
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _actor.Update(actor);
+                _food.Update(genre);
                 transaction.Commit();
             }
             

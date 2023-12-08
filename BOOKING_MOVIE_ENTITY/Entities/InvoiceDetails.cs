@@ -40,6 +40,14 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         
         public virtual Movie Movie { get; set; }
         
+        public virtual Room Room { get; set; }
+        
+        public virtual Cinema Cinema { get; set; }
+        
+        public virtual MovieDateSetting MovieDateSetting { get; set; }
+        
+        public virtual MovieTimeSetting MovieTimeSetting { get; set; }
+
         public virtual Invoice Invoice { get; set; }
     }
 }

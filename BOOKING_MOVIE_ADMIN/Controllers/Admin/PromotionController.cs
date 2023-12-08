@@ -10,120 +10,122 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
 {
-    [Route("Admin/Actor")]
-    public class ActorController : movieControllerBase
+    [Route("Admin/Promotion")]
+    [ApiController]
+    public class PromotionController : movieControllerBase
     {
-        private readonly ActorServices _actor;
+        private readonly PromotionServices _promotion;
         private readonly UnitOfWork _unitOfWork;
-                
-        public ActorController(
-            ActorServices actor,
+
+        public PromotionController(
+            PromotionServices promotionServices,
             UnitOfWork unitOfWork,
             UserServices userService) : base(userService)
         {
-            _actor = actor;
             _unitOfWork = unitOfWork;
+            _promotion = promotionServices;
         }
-        
+
         [Authorize(Policy = "User")]
         [HttpGet]
-        public IActionResult GetActor()
+        public IActionResult GetPromotion()
         {
-            var data = _actor.GetAll().AsNoTracking().ToList();
+            var data = _promotion.GetAll().AsNoTracking().ToList();
 
             return OkList(data);
         }
         
         [Authorize(Policy = "User")]
         [HttpGet("{id}")]
-        public IActionResult GetActor([FromRoute] long id)
+        public IActionResult GetPromotion([FromRoute] long id)
         {
-            var data = _actor.GetAll().AsNoTracking().FirstOrDefault(e => e.Id == id);
+            var data = _promotion.GetAll().AsNoTracking().FirstOrDefault(e => e.Id == id);
 
             return Ok(data);
         }
-        
+
         [Authorize(Policy = "User")]
         [HttpPost]
-        public IActionResult CreateActor([FromBody] Actor body)
+        public IActionResult CreatePromotion([FromBody] Promotion body)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             body.Created = DateTime.Now;
             body.CreatedBy = CurrentUserEmail;
             body.Status = OBJECT_STATUS.ENABLE;
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _actor.Add(body);
+                _promotion.Add(body);
                 transaction.Commit();
             }
-            
-            return Ok();
+
+            return Ok(body);
         }
-        
+
         [Authorize(Policy = "User")]
         [HttpPut("{id}")]
-        public IActionResult UpdateActor([FromRoute] long id,[FromBody] Actor body)
+        public IActionResult UpdatePromotion([FromRoute] long id, [FromBody] Promotion body)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var actor = _actor.GetAll()
+            var promotion = _promotion.GetAll()
                 .Where(e => e.Id == id)
                 .AsNoTracking()
                 .FirstOrDefault();
 
-            if (actor == null)
+            if (promotion == null)
             {
-                return BadRequest("ACTOR_NOT_EXIST");
+                return BadRequest("PROMOTION_NOT_EXIST");
             }
-            
+
+            body.Id = id;
             body.Updated = DateTime.Now;
             body.UpdatedBy = CurrentUserEmail;
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _actor.Update(body);
+                _promotion.Update(body);
                 transaction.Commit();
             }
-            
+
             return Ok();
         }
-        
+
         [Authorize(Policy = "User")]
         [HttpDelete("{id}")]
-        public IActionResult DeleteActor([FromRoute] long id)
+        public IActionResult DeletePromotion([FromRoute] long id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var actor = _actor.GetAll()
+            var promotion = _promotion.GetAll()
                 .Where(e => e.Id == id)
                 .FirstOrDefault();
 
-            if (actor == null)
+            if (promotion == null)
             {
-                return BadRequest("ACTOR_NOT_EXIST");
+                return BadRequest("PROMOTION_NOT_EXIST");
             }
-            
-            actor.Updated = DateTime.Now;
-            actor.UpdatedBy = CurrentUserEmail;
-            actor.Status = OBJECT_STATUS.DELETED;
-            
+
+            promotion.Updated = DateTime.Now;
+            promotion.UpdatedBy = CurrentUserEmail;
+            promotion.Status = OBJECT_STATUS.DELETED;
+
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _actor.Update(actor);
+                _promotion.Update(promotion);
                 transaction.Commit();
             }
-            
+
             return Ok();
         }
     }

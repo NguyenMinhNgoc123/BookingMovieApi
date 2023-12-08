@@ -377,7 +377,6 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             return OkList(data);
         }
         
-        
         [AllowAnonymous]
         [HttpGet("tv/popular")]
         public IActionResult GetTvPopular()

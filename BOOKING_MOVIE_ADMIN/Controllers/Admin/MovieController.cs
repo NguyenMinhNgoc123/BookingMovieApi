@@ -239,5 +239,57 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             
             return Ok();
         }
+        
+        [HttpPut("updateImage/{id}")]
+        [Authorize(Policy = "User")]
+        public IActionResult UpdateImageCustomer([FromRoute] long id, [FromBody] Photo body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var movieExist = _movie.GetAll()
+                .AsNoTracking()
+                .Where(o => o.Id == id)
+                .FirstOrDefault();
+
+            if (movieExist == null)
+            {
+                return BadRequest("MOVIe_NOT_EXIST");
+            }
+
+            var oldImage = _photo.GetAll()
+                .Where(e => e.ObjectId == id)
+                .Where(e => e.Type == body.Type)
+                .FirstOrDefault();
+            
+            body.Status = OBJECT_STATUS.ENABLE;
+            body.Type = body.Type;
+            body.url = body.url;
+            body.ObjectId = id;
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                if (oldImage != null)
+                {
+                    body.UpdatedBy = CurrentUserEmail;
+                    body.Updated = DateTime.Now;
+                    oldImage.Status = OBJECT_STATUS.DELETED;
+                    _photo.Update(oldImage);
+                }   
+                else
+                {
+                    body.CreatedBy = CurrentUserEmail;
+                    body.Created = DateTime.Now;
+                }
+                
+                _photo.Update(body);
+
+                transaction.Commit();
+            }
+
+            return Ok(body);
+        }
     }
 }
