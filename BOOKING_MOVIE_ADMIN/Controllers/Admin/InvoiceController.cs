@@ -45,6 +45,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 .Include(e => e.InvoicePayment)
                 .Include(e => e.Customer)
                 .Include(e => e.Promotion)
+                .OrderByDescending(e => e.Created)
                 .ToList();
 
             return OkList(data);
@@ -63,6 +64,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
         //
         //     return Ok(data);
         // }
+        
         
         [Authorize(Policy = "User")]
         [HttpGet("{id}")]
