@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BOOKING_MOVIE_ADMIN.Reponse;
 using BOOKING_MOVIE_CORE.Services;
@@ -16,40 +17,55 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         private readonly RoomServices _room;
         private readonly UnitOfWork _unitOfWork;
         private readonly MovieRoomServices _movieRoom;
+        private readonly MovieDateSettingServices _movieDateSetting;
 
         public RoomController(
             RoomServices room,
             UnitOfWork unitOfWork,
             MovieRoomServices movieRoom,
+            MovieDateSettingServices movieDateSetting,
             UserServices userService) : base(userService)
         {
             _room = room;
             _unitOfWork = unitOfWork;
             _movieRoom = movieRoom;
+            _movieDateSetting = movieDateSetting;
         }
 
         [Authorize(Policy = "Customer")]
         [HttpGet]
-        public IActionResult GetRoom([FromQuery] long? cinemaId, [FromQuery] long? movieId, [FromQuery] string time)
+        public IActionResult GetRoom([FromQuery] long? cinemaId, [FromQuery] long? movieId, [FromQuery] string time, [FromQuery] long? movieDateSettingId)
         {
-            var data = _movieRoom.GetAll().AsNoTracking();
-
-            if (cinemaId != null)
+            var movie = _movieDateSetting.GetAll().AsNoTracking();
+            
+            if (movieDateSettingId != null)
             {
-                data = data.Where(e => e.MovieCinema.CinemaId == cinemaId);
-            }
-
-            if (time != null)
-            {
-                data = data.Where(e => e.MovieTimeSettings.Any(o => o.Time == time));
+                movie = movie.Where(e => e.Id == movieDateSettingId);
             }
             
             if (movieId != null)
             {
-                data = data.Where(e => e.MovieCinema.MovieDateSetting.MovieId == movieId);
+                movie = movie.Where(e => e.MovieId == movieId);
+            }
+            
+            if (cinemaId != null)
+            {
+                movie = movie.Where(e => e.MovieCinemas.Any(o => o.CinemaId == cinemaId));
             }
 
-            var room = data
+            var data = movie.Include(e => e.MovieCinemas)
+                .ThenInclude(e => e.MovieRooms).FirstOrDefault();
+
+
+            var movieRoomIds = new List<long>();
+            
+            if (cinemaId != null)
+            {
+                movieRoomIds = data.MovieCinemas.Where(e => e.CinemaId == cinemaId).FirstOrDefault().MovieRooms.Select(e => e.Id).ToList();
+            }
+            
+            var room = _movieRoom.GetAll()
+                .Where(e => movieRoomIds.Contains(e.Id))
                 .Include(e => e.Room)
                 .Include(e => e.MovieCinema)
                 .ThenInclude(e => e.Cinema)
