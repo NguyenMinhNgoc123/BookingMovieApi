@@ -210,16 +210,16 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
 
         [Authorize(Policy = "User")]
         [HttpDelete("{id}")]
-        public IActionResult CreateMovieAllUser([FromRoute] long id,[FromBody] Movie body)
+        public IActionResult DeleteMovieAllUser([FromRoute] long id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var movieCheck = _movie.GetAll()
+            var movieCheck = _movie
+                .GetAll()
                 .Where(e => e.Id == id)
-                .AsNoTracking()
                 .FirstOrDefault();
 
             if (movieCheck == null)
@@ -227,13 +227,13 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 return BadRequest("MOVIE_NOT_EXIST");
             }
 
-            body.Updated = DateTime.Now;
-            body.UpdatedBy = CurrentUserEmail;
-            body.Status = OBJECT_STATUS.DELETED;
+            movieCheck.Updated = DateTime.Now;
+            movieCheck.UpdatedBy = CurrentUserEmail;
+            movieCheck.Status = OBJECT_STATUS.DELETED;
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _movie.Update(body);
+                _movie.Update(movieCheck);
                 transaction.Commit();
             }
             

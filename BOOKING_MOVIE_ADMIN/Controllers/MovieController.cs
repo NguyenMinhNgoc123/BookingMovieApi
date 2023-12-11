@@ -112,6 +112,10 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 .ThenInclude(e => e.Actor)
                 .Include(e => e.MovieGenres)
                 .ThenInclude(e => e.Genre)
+                .Include(e => e.MovieDateSettings)
+                .ThenInclude(e => e.MovieCinemas)
+                .ThenInclude(e => e.MovieRooms)
+                .ThenInclude(e => e.MovieTimeSettings)
                 .FirstOrDefault(e => e.Id == id);
 
             if (data != null)
