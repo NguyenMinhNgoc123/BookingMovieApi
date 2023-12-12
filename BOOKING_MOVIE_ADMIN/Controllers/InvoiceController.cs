@@ -78,18 +78,28 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [Authorize(Policy = "Customer")]
-        [HttpGet("/return")]
-        public IActionResult ReturnInvoicePaymentMomo([FromRoute] string orderId)
+        [HttpGet("/return/{code}")]
+        public IActionResult ReturnInvoicePaymentMomo([FromRoute] string code)
         {
             var data = _invoice.GetAll()
-                .AsNoTracking()
-                .Where(e => e.Code == orderId)
+                .Where(e => e.Code == code)
                 .Where(e => e.CustomerId == CurrentCustomerId)
                 .Include(e => e.InvoiceDetails)
                 .Include(e => e.InvoicePayment)
-                .ToList();
+                .FirstOrDefault();
 
-            return OkList(data);
+            if (data != null)
+            {
+                data.PaymentStatus = PAYMENT_STATUS.PAID;
+
+                using (var transaction = _unitOfWork.BeginTransaction())
+                {
+                    _invoice.Update(data);
+                    transaction.Commit();
+                }   
+            }
+
+            return Ok(data);
         }
         
         [Authorize(Policy = "Customer")]
