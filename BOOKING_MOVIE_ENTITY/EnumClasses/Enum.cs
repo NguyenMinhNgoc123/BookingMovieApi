@@ -31,8 +31,13 @@ namespace BOOKING_MOVIE_ENTITY.Entities
     {
         public const string PAID = "PAID";
         public const string UNPAID = "UNPAID";
+        public const string WAITING_10_MINUTE = "WAITING_10_MINUTE";
     }
-    
+    public static class PAYMENT_METHOD
+    {
+        public const string MOMO = "MOMO";
+        public const string ATM = "ATM";
+    }
     public static class OBJECT_NAME_MOVIE
     {
         public const string SEAT = "SEAT";

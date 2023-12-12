@@ -1,12 +1,20 @@
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using BOOKING_MOVIE_ADMIN.Helper;
 using BOOKING_MOVIE_ADMIN.Reponse;
+using BOOKING_MOVIE_ADMIN.Values;
 using BOOKING_MOVIE_CORE.Services;
+using BOOKING_MOVIE_CORE.Values;
 using BOOKING_MOVIE_ENTITY;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
@@ -16,17 +24,83 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
     {
         private readonly PaymentMethodServices _paymentMethod;
         private readonly UnitOfWork _unitOfWork;
-        
+        private readonly MomoConfig _momoConfig;
+
         public PaymentMethodController(
             PaymentMethodServices paymentMethodServices,
             UnitOfWork unitOfWork,
-            UserServices userService
-            ) : base(userService)
+            UserServices userService,           
+            IOptions<MomoConfig> momoConfig
+        ) : base(userService)
         {
             _unitOfWork = unitOfWork;
             _paymentMethod = paymentMethodServices;
+            _momoConfig = momoConfig.Value;
+
         }
 
+        [Authorize(Policy = "User")]
+        [HttpGet("ipn")]
+        public async Task<IActionResult> IpnInvoicePaymentMomo()
+        {
+            // using HttpClient client = new HttpClient();
+            //
+            // var momoRequest = new MomoRequestDto()
+            // {
+            //     partnerCode = _momoConfig.PartnerCode,
+            //     partnerName = "Test",
+            //     storeId  = "MoMoTestStore",
+            //     requestType = "onDelivery",
+            //     ipnUrl = _momoConfig.IpnUrl,
+            //     redirectUrl = _momoConfig.ReturnUrl,
+            //     orderId = "1232ABC",
+            //     amount = 140000,
+            //     lang =  "en",
+            //     orderInfo = "SDKteam",
+            //     requestId = "MM15404562472575",
+            //     extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
+            // };
+            //
+            // var rawSignature = "accessKey=" + _momoConfig.AccessKey +
+            //                    "&amount=" + momoRequest.amount +
+            //                    "&extraData=" + momoRequest.extraData +
+            //                    "&ipnUrl=" + momoRequest.ipnUrl +
+            //                    "&orderId=" + momoRequest.orderId +
+            //                    "&orderInfo=" + momoRequest.orderInfo +
+            //                    "&partnerCode=" + momoRequest.partnerCode +
+            //                    "&redirectUrl=" + momoRequest.redirectUrl +
+            //                    "&requestId=" + momoRequest.requestId +
+            //                    "&requestType=" + momoRequest.requestType;
+            //
+            // momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
+            //
+            // string jsonContent = JsonConvert.SerializeObject(momoRequest);
+            //
+            // HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            //
+            // var createPaymentLinkRes = await client.PostAsync(_momoConfig.PaymentUrl, content);
+            //
+            // if (!createPaymentLinkRes.IsSuccessStatusCode)
+            // {
+            //     var errorContent = await createPaymentLinkRes.Content.ReadAsStringAsync();
+            //     Console.WriteLine($"Error: {errorContent}");
+            // }
+            //
+            // if (createPaymentLinkRes.IsSuccessStatusCode)
+            // {
+            //     var responseContent = createPaymentLinkRes.Content.ReadAsStringAsync().Result;
+            //     var responseData = JsonConvert.DeserializeObject<MomoResponseDto>(responseContent);
+            //     if (responseData.ResultCode == "0")
+            //     {
+            //         return Ok(responseData.PayUrl);
+            //     }
+            //     
+            //     return Ok(responseData.Message);
+            // }
+            //
+            return Ok();
+        }
+        
         [HttpGet]
         [Authorize(Policy = "Customer")]
         public IActionResult GetPaymentMethod()

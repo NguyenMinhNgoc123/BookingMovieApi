@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using BOOKING_MOVIE_ADMIN.Helper;
 using BOOKING_MOVIE_ADMIN.Reponse;
 using BOOKING_MOVIE_ADMIN.Values;
 using BOOKING_MOVIE_CORE.Services;
+using BOOKING_MOVIE_CORE.Values;
 using BOOKING_MOVIE_ENTITY;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace BOOKING_MOVIE_ADMIN.Controllers
 {
@@ -22,7 +29,9 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         private readonly InvoicesDetailServices _invoicesDetail;
         private readonly PromotionServices _promotion;
         private readonly InvoicePaymentServices _invoicePayment;
-        
+        private readonly MomoConfig _momoConfig;
+        private readonly PaymentMethodServices _paymentMethod;
+
         public InvoiceController(
             CustomerServices customer,
             InvoiceServices invoice,
@@ -30,6 +39,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             UnitOfWork unitOfWork,
             PromotionServices promotion,
             InvoicePaymentServices invoicePayment,
+            IOptions<MomoConfig> momoConfig,
+            PaymentMethodServices paymentMethod,
             UserServices userService) : base(userService)
         {
             _promotion = promotion;
@@ -38,6 +49,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _customer = customer;
             _invoice = invoice;
             _invoicePayment = invoicePayment;
+            _paymentMethod = paymentMethod;
+            _momoConfig = momoConfig.Value;
         }
 
         [HttpGet]
@@ -65,8 +78,44 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [Authorize(Policy = "Customer")]
+        [HttpGet("/return")]
+        public IActionResult ReturnInvoicePaymentMomo([FromRoute] string orderId)
+        {
+            var data = _invoice.GetAll()
+                .AsNoTracking()
+                .Where(e => e.Code == orderId)
+                .Where(e => e.CustomerId == CurrentCustomerId)
+                .Include(e => e.InvoiceDetails)
+                .Include(e => e.InvoicePayment)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [Authorize(Policy = "Customer")]
+        [HttpGet("/Histories")]
+        public IActionResult GetInvoiceHistory()
+        {
+            var data = _invoice.GetAll()
+                .AsNoTracking()
+                .Where(e => e.CustomerId == CurrentCustomerId)
+                .Include(e => e.InvoiceDetails)
+                .Include(e => e.InvoicePayment)
+                .ToList();
+
+            return OkList(data);
+        }
+        
+        [Authorize(Policy = "Customer")]
+        [HttpPost("/payment/momo")]
+        public IActionResult CreateInvoicePaymentMomo([FromRoute] string code)
+        {
+            return Ok();
+        }
+        
+        [Authorize(Policy = "Customer")]
         [HttpPost]
-        public IActionResult CreateInvoice([FromBody] InvoiceCreateDto body)
+        public async Task<IActionResult> CreateInvoice([FromBody] InvoiceCreateDto body)
         {
             if (!ModelState.IsValid)
             {
@@ -103,11 +152,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     return BadRequest("PROMOTION_EXPIRES_OR_DELETED");
                 }
             }
-            
+
+            var seatsSelectSold = new List<string>();
             var createInvoiceDetails = body.InvoiceDetails.Select(e =>
             {
                 var promotion = promotions.FirstOrDefault(o => o.Id == e.PromotionId);
                 var total = _invoicesDetail.TotalInvoiceDetail(e.ObjectPrice, e.Quantity, e.PromotionId, e.DiscountValue ?? 0);
+
+                if (e.ObjectName == OBJECT_NAME_MOVIE.SEAT)
+                {
+                    seatsSelectSold.Add(e.ObjectCode);
+                }
                 
                 return new InvoiceDetails()
                 {
@@ -146,31 +201,34 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             decimal totalAllDetailInvoice = _invoicesDetail.TotalInvoice(createInvoiceDetails);
             decimal totalInvoice = _invoice.CalculateTotal(totalAllDetailInvoice, body.DiscountValue ?? 0, body.DiscountUnit);
 
+            var invoicePaymentMethodIds = body.InvoicePayment.Select(e => e.InvoiceMethodId).ToList();
+            var paymentMethodMomo = _paymentMethod.GetAll().Where(e => e.Code == PAYMENT_METHOD.MOMO).Where(e => invoicePaymentMethodIds.Contains(e.Id)).ToList();
+            
+            var discountTotal = totalAllDetailInvoice * body.DiscountValue / 100;
+                
+            var createInvoice = new Invoice()
+            {
+                Code = body.Code,
+                CustomerId = body.CustomerId,
+                DiscountUnit = body.DiscountUnit,
+                DiscountValue = body.DiscountValue,
+                IsDisplay = true,
+                Note = body.Note,
+                Total = totalInvoice,
+                NotePayment = body.NotePayment,
+                TotalDetails = totalAllDetailInvoice,
+                PaymentStatus = paymentMethodMomo.Count == 0 ? PAYMENT_STATUS.PAID : PAYMENT_STATUS.WAITING_10_MINUTE,
+                PaidTotal = body.InvoicePayment.Sum(e => e.Total),
+                DiscountTotal = discountTotal,
+                PaidAt = DateTime.Now,
+                PromotionId = body.PromotionId,
+                Created = DateTime.Now,
+                CreatedBy = CurrentUserEmail,
+                Status = OBJECT_STATUS.ENABLE,
+            };
+            
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                var discountTotal = totalAllDetailInvoice * body.DiscountValue / 100;
-                
-                var createInvoice = new Invoice()
-                {
-                    Code = body.Code,
-                    CustomerId = body.CustomerId,
-                    DiscountUnit = body.DiscountUnit,
-                    DiscountValue = body.DiscountValue,
-                    IsDisplay = true,
-                    Note = body.Note,
-                    Total = totalInvoice,
-                    NotePayment = body.NotePayment,
-                    TotalDetails = totalAllDetailInvoice,
-                    PaymentStatus = PAYMENT_STATUS.PAID,
-                    PaidTotal = body.InvoicePayment.Sum(e => e.Total),
-                    DiscountTotal = discountTotal,
-                    PaidAt = DateTime.Now,
-                    PromotionId = body.PromotionId,
-                    Created = DateTime.Now,
-                    CreatedBy = CurrentUserEmail,
-                    Status = OBJECT_STATUS.ENABLE
-                };
-
                 _invoice.Add(createInvoice);
 
                 
@@ -192,11 +250,50 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 }).ToList();
 
                 _invoicePayment.AddRange(createInvoicePayment);
-                
+
                 transaction.Commit();
             }
+
+            if (paymentMethodMomo.Count > 0)
+            {
+
+                using HttpClient client = new HttpClient();
+
+                var momoRequest = new MomoRequestDto()
+                {
+                    partnerCode = _momoConfig.PartnerCode,
+                    partnerName = "Test",
+                    storeId  = "MoMoTestStore",
+                    requestType = "onDelivery",
+                    ipnUrl = _momoConfig.IpnUrl,
+                    redirectUrl = _momoConfig.ReturnUrl,
+                    orderId = body.Code,
+                    amount = (long)totalInvoice,
+                    lang =  "en",
+                    orderInfo = string.Join(',', seatsSelectSold),
+                    requestId = "MM15404562472575",
+                    extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
+                };
+
+                var rawSignature = "accessKey=" + _momoConfig.AccessKey +
+                                   "&amount=" + momoRequest.amount +
+                                   "&extraData=" + momoRequest.extraData +
+                                   "&ipnUrl=" + momoRequest.ipnUrl +
+                                   "&orderId=" + momoRequest.orderId +
+                                   "&orderInfo=" + momoRequest.orderInfo +
+                                   "&partnerCode=" + momoRequest.partnerCode +
+                                   "&redirectUrl=" + momoRequest.redirectUrl +
+                                   "&requestId=" + momoRequest.requestId +
+                                   "&requestType=" + momoRequest.requestType;
             
+                momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
+
+                (bool createMomoLinkResult, string createMessage) = momoRequest.GetLink(_momoConfig.PaymentUrl);
+                return Ok(createMessage);
+            }
+
             return Ok();
         }
+        
     }
 }

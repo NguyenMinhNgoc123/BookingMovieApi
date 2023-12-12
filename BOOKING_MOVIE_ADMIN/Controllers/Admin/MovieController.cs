@@ -154,6 +154,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                     Description = body.Description,
                     ReleaseDate = body.ReleaseDate,
                     PremiereDate = body.PremiereDate,
+                    StartDate = body.StartDate,
+                    EndDate = body.EndDate
                 };
                 
                 _movie.Add(createMovie);

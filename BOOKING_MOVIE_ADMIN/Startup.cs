@@ -24,6 +24,7 @@ namespace BOOKING_MOVIE_ADMIN
             Mvc.ConfigureServices(services, Configuration);
             Cors.ConfigureServices(services);
             DbContext.ConfigureServices(services, Configuration);
+            Momo.ConfigureServices(services, Configuration);
 
             Authentication.ConfigureServices(
                 services, Configuration,

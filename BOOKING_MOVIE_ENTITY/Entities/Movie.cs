@@ -25,8 +25,11 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public decimal Rate { get; set; }
         
         public string Description { get; set; }
-        
         public DateTime ReleaseDate { get; set; }
+
+        public DateTime StartDate { get; set; }
+        
+        public DateTime EndDate { get; set; }
 
         public DateTime PremiereDate { get; set; }
         public virtual ICollection<MovieGenres> MovieGenres { get; set; }

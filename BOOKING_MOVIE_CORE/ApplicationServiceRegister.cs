@@ -1,4 +1,5 @@
 using BOOKING_MOVIE_CORE.Services;
+using BOOKING_MOVIE_CORE.Values;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +9,8 @@ namespace BOOKING_MOVIE_CORE
     {
         public static void Register(IServiceCollection services)
         {
+            services.AddSingleton<MomoConfig>();
+
             services.AddScoped<UserServices>();
             services.AddScoped<AuthServices>();
             services.AddScoped<CustomerServices>();
