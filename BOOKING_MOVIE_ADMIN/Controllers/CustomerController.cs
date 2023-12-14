@@ -103,6 +103,15 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 body.PasswordHash = userExist.PasswordHash;
 
             }
+
+            var mobileExist = _customer.GetAll()
+                .Where(e => e.Mobile == body.Mobile)
+                .FirstOrDefault(e => e.Id != id);
+            
+            if (mobileExist != null)
+            {
+                return BadRequest("MOBILE_EXIST");
+            }
             
             using (var transaction = _unitOfWork.BeginTransaction())
             {

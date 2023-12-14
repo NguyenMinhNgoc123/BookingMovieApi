@@ -71,6 +71,23 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             var data = _movie
                 .GetAll()
                 .AsNoTracking()
+                .Include(e => e.MovieGenres)
+                .ThenInclude(e => e.Genre)
+                .Include(e => e.MovieActors)
+                .ThenInclude(e => e.Actor)
+                .Include(e => e.MovieDirectors)
+                .ThenInclude(e => e.Director)
+                .Include(e => e.MovieDateSettings)
+                    .ThenInclude(e => e.MovieCinemas)
+                    .ThenInclude(e => e.Cinema)
+                .Include(e => e.MovieDateSettings)
+                    .ThenInclude(e => e.MovieCinemas)
+                    .ThenInclude(e => e.MovieRooms)
+                    .ThenInclude(e => e.Room)
+                .Include(e => e.MovieDateSettings)
+                    .ThenInclude(e => e.MovieCinemas)
+                    .ThenInclude(e => e.MovieRooms)
+                    .ThenInclude(e => e.MovieTimeSettings)
                 .OrderByDescending(e => e.Created)
                 .ToList();
             
@@ -93,6 +110,40 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             }
             
             return OkList(data);
+        }
+        
+        [Authorize(Policy = "User")]
+        [HttpGet("{id}")]
+        public IActionResult GetMovieDetail([FromRoute] long id)
+        {
+            var data = _movie
+                .GetAll()
+                .AsNoTracking()
+                .Where(e => e.Id == id)
+                .Include(e => e.MovieDateSettings)
+                .ThenInclude(e => e.MovieCinemas)
+                .ThenInclude(e => e.MovieRooms)
+                .ThenInclude(e => e.MovieTimeSettings)
+                .OrderByDescending(e => e.Created)
+                .FirstOrDefault();
+            
+            if (data != null)
+            {
+                var posterPhotos = _photo.GetAll()
+                    .Where(e => data.Id == e.ObjectId)
+                    .Where(e => e.Type == PHOTO.POSTER_MOVIE || e.Type == PHOTO.BACKDROP_MOVIE)
+                    .ToList();
+
+                if (posterPhotos.Count > 0)
+                {
+                    data.PosterPhoto = posterPhotos.Where(e => e.Type == PHOTO.POSTER_MOVIE)
+                        .FirstOrDefault(o => o.ObjectId == data.Id);
+                    data.BackdropPhoto = posterPhotos.Where(e => e.Type == PHOTO.BACKDROP_MOVIE)
+                        .FirstOrDefault(o => o.ObjectId == data.Id);
+                }
+            }
+            
+            return Ok(data);
         }
 
         [Authorize(Policy = "User")]
