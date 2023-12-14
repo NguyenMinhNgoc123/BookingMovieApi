@@ -15,13 +15,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
     {
         private UnitOfWork _unitOfWork;
         private MovieDateSettingServices _movieDateSetting;
+        private InvoiceServices _invoice;
+
         public MovieDateSettingController(
             UnitOfWork unitOfWork,
             MovieDateSettingServices movieDateSetting,
+            InvoiceServices invoice,
             UserServices userService) : base(userService)
         {
             _unitOfWork = unitOfWork;
             _movieDateSetting = movieDateSetting;
+            _invoice = invoice;
         }
         
         [Authorize(Policy = "User")]
@@ -42,6 +46,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 return BadRequest("MOVIE_DATE_SETTING_NOT_EXIST");
             }
 
+            var invoice = _invoice
+                .GetAll()
+                .Where(e => e.InvoiceDetails.Any(o => o.MovieDateSettingId == id))
+                .Where(e => e.PaymentStatus == PAYMENT_STATUS.PAID)
+                .FirstOrDefault();
+            
+            if (invoice != null)
+            {
+                return BadRequest("DATE_INVOICE_EXIST");
+            }
+            
             movieDateSetting.Updated = DateTime.Now;
             movieDateSetting.UpdatedBy = CurrentUserEmail;
             movieDateSetting.Status = OBJECT_STATUS.DELETED;
