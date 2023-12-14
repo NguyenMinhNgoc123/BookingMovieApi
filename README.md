@@ -8,8 +8,14 @@ https://github.com/NguyenMinhNgoc123/BookingMovieWebAdmin
 
 UPDATE movie_db.Movie
 SET
-StartDate = COALESCE((SELECT MIN(time) FROM movie_db.MovieDateSetting WHERE movie_db.Movie.Id = movie_db.MovieDateSetting.MovieId), CURRENT_TIMESTAMP),
-EndDate = COALESCE((SELECT MAX(time) FROM movie_db.MovieDateSetting WHERE movie_db.Movie.Id = movie_db.MovieDateSetting.MovieId), CURRENT_TIMESTAMP);
+StartDate = COALESCE(
+(SELECT MIN(time) FROM movie_db.MovieDateSetting WHERE movie_db.Movie.Id = movie_db.MovieDateSetting.MovieId),
+CURRENT_TIMESTAMP
+),
+EndDate = COALESCE(
+(SELECT MAX(time) FROM movie_db.MovieDateSetting WHERE movie_db.Movie.Id = movie_db.MovieDateSetting.MovieId),
+CURRENT_TIMESTAMP
+);
 
 
 cách run api: 
