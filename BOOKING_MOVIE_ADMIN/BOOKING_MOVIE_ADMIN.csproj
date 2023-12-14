@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
-        <LangVersion>8</LangVersion>
+
         <CheckEolTargetFramework>false</CheckEolTargetFramework>
         <NoWarn>NETSDK1138</NoWarn>
     </PropertyGroup>
