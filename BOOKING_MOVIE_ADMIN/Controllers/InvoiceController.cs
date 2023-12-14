@@ -267,39 +267,40 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             if (paymentMethodMomo.Count > 0)
             {
 
-                using HttpClient client = new HttpClient();
-
-                var momoRequest = new MomoRequestDto()
+                using (HttpClient client = new HttpClient())
                 {
-                    partnerCode = _momoConfig.PartnerCode,
-                    partnerName = "Test",
-                    storeId  = "MoMoTestStore",
-                    requestType = "onDelivery",
-                    ipnUrl = _momoConfig.IpnUrl,
-                    redirectUrl = _momoConfig.ReturnUrl,
-                    orderId = body.Code,
-                    amount = (long)totalInvoice,
-                    lang =  "en",
-                    orderInfo = string.Join(',', seatsSelectSold),
-                    requestId = "MM15404562472575",
-                    extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
-                };
+                    var momoRequest = new MomoRequestDto()
+                    {
+                        partnerCode = _momoConfig.PartnerCode,
+                        partnerName = "Test",
+                        storeId  = "MoMoTestStore",
+                        requestType = "onDelivery",
+                        ipnUrl = _momoConfig.IpnUrl,
+                        redirectUrl = _momoConfig.ReturnUrl,
+                        orderId = body.Code,
+                        amount = (long)totalInvoice,
+                        lang =  "en",
+                        orderInfo = string.Join(',', seatsSelectSold),
+                        requestId = "MM15404562472575",
+                        extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
+                    };
 
-                var rawSignature = "accessKey=" + _momoConfig.AccessKey +
-                                   "&amount=" + momoRequest.amount +
-                                   "&extraData=" + momoRequest.extraData +
-                                   "&ipnUrl=" + momoRequest.ipnUrl +
-                                   "&orderId=" + momoRequest.orderId +
-                                   "&orderInfo=" + momoRequest.orderInfo +
-                                   "&partnerCode=" + momoRequest.partnerCode +
-                                   "&redirectUrl=" + momoRequest.redirectUrl +
-                                   "&requestId=" + momoRequest.requestId +
-                                   "&requestType=" + momoRequest.requestType;
+                    var rawSignature = "accessKey=" + _momoConfig.AccessKey +
+                                       "&amount=" + momoRequest.amount +
+                                       "&extraData=" + momoRequest.extraData +
+                                       "&ipnUrl=" + momoRequest.ipnUrl +
+                                       "&orderId=" + momoRequest.orderId +
+                                       "&orderInfo=" + momoRequest.orderInfo +
+                                       "&partnerCode=" + momoRequest.partnerCode +
+                                       "&redirectUrl=" + momoRequest.redirectUrl +
+                                       "&requestId=" + momoRequest.requestId +
+                                       "&requestType=" + momoRequest.requestType;
             
-                momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
+                    momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
 
-                (bool createMomoLinkResult, string createMessage) = momoRequest.GetLink(_momoConfig.PaymentUrl);
-                return Ok(createMessage);
+                    (bool createMomoLinkResult, string createMessage) = momoRequest.GetLink(_momoConfig.PaymentUrl);
+                    return Ok(createMessage);
+                }
             }
 
             return Ok();

@@ -49,30 +49,31 @@ namespace BOOKING_MOVIE_ADMIN.Values
 
         public (bool, string) GetLink(string paymentUrl)
         {
-            using HttpClient client = new HttpClient();
-
-            var requestData = JsonConvert.SerializeObject(this, new JsonSerializerSettings()
+            using (HttpClient client = new HttpClient())
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Formatting = Formatting.Indented,
-            });
-
-            var requestContent = new StringContent(requestData, Encoding.UTF8, "application/json");
-            var createPaymentLinkRes = client.PostAsync(paymentUrl, requestContent).Result;
-        
-            if (createPaymentLinkRes.IsSuccessStatusCode)
-            {
-                var responseContent = createPaymentLinkRes.Content.ReadAsStringAsync().Result;
-                var responseData = JsonConvert.DeserializeObject<MomoResponseDto>(responseContent);
-                if (responseData.ResultCode == "0")
+                var requestData = JsonConvert.SerializeObject(this, new JsonSerializerSettings()
                 {
-                    return (true, responseData.PayUrl);
-                }
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    Formatting = Formatting.Indented,
+                });
+
+                var requestContent = new StringContent(requestData, Encoding.UTF8, "application/json");
+                var createPaymentLinkRes = client.PostAsync(paymentUrl, requestContent).Result;
+        
+                if (createPaymentLinkRes.IsSuccessStatusCode)
+                {
+                    var responseContent = createPaymentLinkRes.Content.ReadAsStringAsync().Result;
+                    var responseData = JsonConvert.DeserializeObject<MomoResponseDto>(responseContent);
+                    if (responseData.ResultCode == "0")
+                    {
+                        return (true, responseData.PayUrl);
+                    }
                 
-                return (false, responseData.Message);
+                    return (false, responseData.Message);
+                }   
+                
+                return (false, createPaymentLinkRes.ReasonPhrase);
             }
-             
-            return (false, createPaymentLinkRes.ReasonPhrase);
         }
     }
 }

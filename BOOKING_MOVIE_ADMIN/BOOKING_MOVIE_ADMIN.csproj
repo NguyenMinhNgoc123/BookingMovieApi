@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
-
         <CheckEolTargetFramework>false</CheckEolTargetFramework>
         <NoWarn>NETSDK1138</NoWarn>
     </PropertyGroup>
