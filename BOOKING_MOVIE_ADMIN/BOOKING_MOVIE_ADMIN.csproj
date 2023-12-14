@@ -22,5 +22,9 @@
         <ProjectReference Include="..\BOOKING_MOVIE_CORE\BOOKING_MOVIE_CORE.csproj" />
         <ProjectReference Include="..\BOOKING_MOVIE_ENTITY\BOOKING_MOVIE_ENTITY.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="ReportControllers" />
+    </ItemGroup>
 
 </Project>

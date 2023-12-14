@@ -1,5 +1,6 @@
 using System.Linq;
 using BOOKING_MOVIE_ADMIN.Reponse;
+using BOOKING_MOVIE_ADMIN.Values;
 using BOOKING_MOVIE_CORE.Services;
 using BOOKING_MOVIE_ENTITY;
 using Microsoft.AspNetCore.Authorization;
@@ -51,21 +52,31 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             return OkList(data);
         }
         
-        // [Authorize(Policy = "User")]
-        // [HttpGet]
-        // public IActionResult GetSumInvoice()
-        // {
-        //     var data = _invoice.GetAll()
-        //         .Include(e => e.InvoiceDetails)
-        //         .Include(e => e.InvoicePayment)
-        //         .Include(e => e.Customer)
-        //         .Include(e => e.Promotion)
-        //         .FirstOrDefault();
-        //
-        //     return Ok(data);
-        // }
-        
-        
+        [Authorize(Policy = "User")]
+        [HttpGet("Sum")]
+        public SumInvoiceDto GetSumInvoice()
+        {
+            var data = _invoice.GetAll()
+                .Include(e => e.InvoiceDetails)
+                .Include(e => e.InvoicePayment)
+                .Include(e => e.Customer)
+                .Include(e => e.Promotion)
+                .ToList();
+
+            var sumCustomer = _customer.GetAll().ToList().Count();
+            var newSumInvoice = new SumInvoiceDto()
+            {
+                CountInvoice = data.ToList().Count,
+                RevenueInvoice = data.ToList().Sum(e => e.Total ?? 0),
+                RevenueInvoicePaid = data.ToList().Sum(e => e.PaidTotal ?? 0),
+                CountCustomer = data.ToList().Select(e => e.CustomerId).Distinct().Count(),
+                SumCustomer = sumCustomer
+            };
+
+            return newSumInvoice;
+        }
+
+
         [Authorize(Policy = "User")]
         [HttpGet("{id}")]
         public IActionResult GetUser([FromRoute] long id)

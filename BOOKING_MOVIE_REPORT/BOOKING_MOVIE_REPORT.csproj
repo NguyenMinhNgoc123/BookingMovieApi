@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <CheckEolTargetFramework>false</CheckEolTargetFramework>
+        <NoWarn>NETSDK1138</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BOOKING_MOVIE_CORE\BOOKING_MOVIE_CORE.csproj" />
+        <ProjectReference Include="..\BOOKING_MOVIE_ENTITY\BOOKING_MOVIE_ENTITY.csproj" />
+    </ItemGroup>
+</Project>

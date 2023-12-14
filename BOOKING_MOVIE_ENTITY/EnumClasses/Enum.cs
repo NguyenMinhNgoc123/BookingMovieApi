@@ -73,6 +73,12 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public const string POPULARITY = "POPULARITY";
         public const string RATING = "RATING";
         public const string MOST_RECENT = "MOST_RECENT";
-
+    }
+    
+    public static class MOVIE_STATUS
+    {
+        public const string COMING_SOON = "COMING_SOON";
+        public const string PREMIERING = "PREMIERING";
+        public const string EXPIRED = "EXPIRED";
     }
 }

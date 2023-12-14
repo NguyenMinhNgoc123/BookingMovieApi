@@ -14,4 +14,4 @@ namespace BOOKING_MOVIE_MIGRATION
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
     }
-}
+} 

@@ -197,7 +197,11 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                     Status = OBJECT_STATUS.ENABLE,
                     Name = body.Name,
                     Overview = body.Overview,
-                    MovieStatus = body.MovieStatus,
+                    MovieStatus = body.StartDate <= DateTime.Now && body.EndDate >= DateTime.Now
+                        ? MOVIE_STATUS.PREMIERING
+                        : body.StartDate >= DateTime.Now
+                            ? MOVIE_STATUS.COMING_SOON
+                            : MOVIE_STATUS.EXPIRED,
                     YearOfRelease = body.YearOfRelease,
                     Time = body.Time,
                     Country = body.Country,
@@ -343,6 +347,54 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             }
 
             return Ok(body);
+        }
+        
+        [HttpGet("updateStatusMovie")]
+        [Authorize(Policy = "User")]
+        public IActionResult UpdateChartMovieStatus()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var movieExist = _movie.GetAll()
+                .OrderByDescending(e => e.Created)
+                .ToList();
+
+            var newMovies = movieExist.Select(e =>
+            {
+                if (e.StartDate <= DateTime.Now && e.EndDate >= DateTime.Now)
+                {
+                    if (e.MovieStatus != MOVIE_STATUS.PREMIERING)
+                    {
+                        e.Updated = DateTime.Now;
+                        e.UpdatedBy = CurrentUserEmail;
+                        e.MovieStatus = MOVIE_STATUS.PREMIERING;
+                    }
+                }
+
+                if (e.EndDate <= DateTime.Now)
+                {
+                    if (e.MovieStatus != MOVIE_STATUS.EXPIRED)
+                    {
+                        e.Updated = DateTime.Now;
+                        e.UpdatedBy = CurrentUserEmail;
+                        e.MovieStatus = MOVIE_STATUS.EXPIRED;
+                    }
+                }
+                
+                return e;
+            }).ToList();
+            
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _movie.UpdateRange(newMovies);
+                transaction.Commit();
+            }
+
+            return Ok();
         }
     }
 }
