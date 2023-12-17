@@ -32,7 +32,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             var data = _invoicesDetail
                 .GetAll()
                 .AsNoTracking()
-                .Where(e => e.Invoice.PaymentStatus == PAYMENT_STATUS.PAID)
+                .Where(e => e.Invoice.PaymentStatus == PAYMENT_STATUS.PAID || e.Invoice.PaymentStatus == PAYMENT_STATUS.WAITING_10_MINUTE)
                 .Where(e => e.ObjectName == OBJECT_NAME_MOVIE.SEAT)
                 .Where(e => e.MovieId == movieId)
                 .Where(e => e.RoomId == roomId)

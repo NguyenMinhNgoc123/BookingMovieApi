@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -43,6 +44,6 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual ICollection<InvoiceDetails> InvoiceDetails { get; set; }
 
         public virtual ICollection<InvoicePayment> InvoicePayment { get; set; }
-
+        
     }
 }

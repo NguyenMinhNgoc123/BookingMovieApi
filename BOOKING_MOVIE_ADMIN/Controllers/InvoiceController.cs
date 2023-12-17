@@ -31,6 +31,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         private readonly InvoicePaymentServices _invoicePayment;
         private readonly MomoConfig _momoConfig;
         private readonly PaymentMethodServices _paymentMethod;
+        private readonly ComboFoodServices _comboFood;
+        private readonly FoodServices _food;
 
         public InvoiceController(
             CustomerServices customer,
@@ -41,6 +43,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             InvoicePaymentServices invoicePayment,
             IOptions<MomoConfig> momoConfig,
             PaymentMethodServices paymentMethod,
+            ComboFoodServices comboFood,
+            FoodServices food,
             UserServices userService) : base(userService)
         {
             _promotion = promotion;
@@ -50,6 +54,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             _invoice = invoice;
             _invoicePayment = invoicePayment;
             _paymentMethod = paymentMethod;
+            _comboFood = comboFood;
+            _food = food;
             _momoConfig = momoConfig.Value;
         }
 
@@ -103,23 +109,177 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [Authorize(Policy = "Customer")]
-        [HttpGet("/Histories")]
+        [HttpGet("Histories")]
         public IActionResult GetInvoiceHistory()
         {
             var data = _invoice.GetAll()
                 .AsNoTracking()
                 .Where(e => e.CustomerId == CurrentCustomerId)
                 .Include(e => e.InvoiceDetails)
+                .ThenInclude(e => e.Movie)
+                .Include(e => e.InvoiceDetails)
+                .ThenInclude(e => e.MovieDateSetting)
+                .Include(e => e.InvoiceDetails)
+                .ThenInclude(e => e.MovieTimeSetting)
+                .Include(e => e.InvoiceDetails)
+                .ThenInclude(e => e.Cinema)
+                .Include(e => e.InvoiceDetails)
+                .ThenInclude(e => e.Room)
                 .Include(e => e.InvoicePayment)
+                .OrderByDescending(e => e.Created)
                 .ToList();
 
+            if (data.Count > 0)
+            {
+                var comboFoodIds = data
+                    .Where(e => e.InvoiceDetails.Any(o => o.ObjectName == "COMBO_FOOD"))
+                    .SelectMany(e => e.InvoiceDetails.Select(o => o.ObjectId))
+                    .ToList();
+
+                var foodIds = data
+                    .Where(e => e.InvoiceDetails.Any(o => o.ObjectName == "FOOD"))
+                    .SelectMany(e => e.InvoiceDetails.Select(o => o.ObjectId))
+                    .ToList();
+
+                var comboFoods = _comboFood.GetAll()
+                    .Where(e => comboFoodIds.Contains(e.Id))
+                    .ToList();
+
+                var foods = _food.GetAll()
+                    .Where(e => foodIds.Contains(e.Id))
+                    .ToList();
+
+                foreach (var elm in data)
+                {
+                    foreach (var e in elm.InvoiceDetails)
+                    {
+                        if (e.ObjectName == "COMBO_FOOD" && comboFoods.Count > 0)
+                        {
+                            e.ComboFood = comboFoods.Where(o => o.Id == e.ObjectId).FirstOrDefault();
+                        }
+
+                        if (e.ObjectName == "FOOD" && foods.Count > 0)
+                        {
+                            e.Food = foods.Where(o => o.Id == e.ObjectId).FirstOrDefault();
+                        }
+                    }
+                }
+            }
+            
             return OkList(data);
         }
         
         [Authorize(Policy = "Customer")]
-        [HttpPost("/payment/momo")]
-        public IActionResult CreateInvoicePaymentMomo([FromRoute] string code)
+        [HttpPut("Payment/momo/{code}")]
+        public IActionResult CreateInvoicePaymentMomoCode([FromRoute] string code)
         {
+            var invoice = _invoice.GetAll()
+                .Where(e => e.Code == code)
+                .Where(e => e.CustomerId == CurrentCustomerId)
+                .Where(e => e.InvoicePayment.Any(o => o.InvoiceMethod.Code == PAYMENT_METHOD.MOMO))
+                .Include(e => e.InvoiceDetails)
+                .FirstOrDefault();
+            
+            if (invoice == null)
+            {
+                return BadRequest();
+            }
+            var seatsSelectSold = new List<string>();
+            foreach (var e in invoice.InvoiceDetails)
+            {
+                if (e.ObjectName == OBJECT_NAME_MOVIE.SEAT)
+                {
+                    seatsSelectSold.Add(e.ObjectCode);
+                }
+            };
+            
+            var momoRequest = new MomoRequestDto()
+            {
+                partnerCode = _momoConfig.PartnerCode,
+                partnerName = "Test",
+                storeId = "MoMoTestStore",
+                requestType = "onDelivery",
+                ipnUrl = _momoConfig.IpnUrl,
+                redirectUrl = _momoConfig.ReturnUrl,
+                orderId = invoice.Code,
+                amount = (long)invoice.Total,
+                lang = "en",
+                orderInfo = string.Join(',', seatsSelectSold),
+                requestId = invoice.Code,
+                extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
+            };
+
+            var rawSignature = "accessKey=" + _momoConfig.AccessKey +
+                               "&amount=" + momoRequest.amount +
+                               "&extraData=" + momoRequest.extraData +
+                               "&ipnUrl=" + momoRequest.ipnUrl +
+                               "&orderId=" + momoRequest.orderId +
+                               "&orderInfo=" + momoRequest.orderInfo +
+                               "&partnerCode=" + momoRequest.partnerCode +
+                               "&redirectUrl=" + momoRequest.redirectUrl +
+                               "&requestId=" + momoRequest.requestId +
+                               "&requestType=" + momoRequest.requestType;
+
+            momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
+
+            (bool createMomoLinkResult, string createMessage) = momoRequest.GetLink(_momoConfig.PaymentUrl);
+            return Ok(createMessage);
+        }
+        
+        [Authorize(Policy = "Customer")]
+        [HttpGet("Sum")]
+        public SumInvoiceDto GetSumInvoice()
+        {
+            var data = _invoice.GetAll()
+                .Where(e => e.CustomerId == CurrentCustomerId)
+                .Include(e => e.InvoiceDetails)
+                .Include(e => e.InvoicePayment)
+                .Include(e => e.Customer)
+                .Include(e => e.Promotion)
+                .ToList();
+
+            var sumCustomer = _customer.GetAll().ToList().Count();
+            var newSumInvoice = new SumInvoiceDto()
+            {
+                CountInvoice = data.ToList().Count,
+                RevenueInvoice = data.ToList().Sum(e => e.Total ?? 0),
+                RevenueInvoicePaid = data.ToList().Sum(e => e.PaidTotal ?? 0),
+                CountCustomer = data.ToList().Select(e => e.CustomerId).Distinct().Count(),
+                SumCustomer = sumCustomer
+            };
+
+            return newSumInvoice;
+        }
+        
+        [Authorize(Policy = "Customer")]
+        [HttpPut("Chart/PaymentStatus")]
+        public IActionResult CreateInvoicePaymentMomo()
+        {
+            var invoices = _invoice.GetAll()
+                .Where(e => e.PaymentStatus == PAYMENT_STATUS.WAITING_10_MINUTE)
+                .ToList();
+
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                if (invoices.Count > 0)
+                {
+                    foreach (var e in invoices)
+                    {
+                        if (e.Created != null)
+                        {
+                            var waitingTenMinute = e.Created.Value.AddMinutes(10);
+                            if (waitingTenMinute <= DateTime.Now)
+                            {
+                                e.Status = OBJECT_STATUS.DELETED;
+                            }   
+                        }
+                    }
+                    
+                    _invoice.UpdateRange(invoices);
+                }
+
+                transaction.Commit();
+            }
             return Ok();
         }
         
@@ -266,41 +426,37 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
             if (paymentMethodMomo.Count > 0)
             {
-
-                using (HttpClient client = new HttpClient())
+                var momoRequest = new MomoRequestDto()
                 {
-                    var momoRequest = new MomoRequestDto()
-                    {
-                        partnerCode = _momoConfig.PartnerCode,
-                        partnerName = "Test",
-                        storeId  = "MoMoTestStore",
-                        requestType = "onDelivery",
-                        ipnUrl = _momoConfig.IpnUrl,
-                        redirectUrl = _momoConfig.ReturnUrl,
-                        orderId = body.Code,
-                        amount = (long)totalInvoice,
-                        lang =  "en",
-                        orderInfo = string.Join(',', seatsSelectSold),
-                        requestId = "MM15404562472575",
-                        extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
-                    };
+                    partnerCode = _momoConfig.PartnerCode,
+                    partnerName = "Test",
+                    storeId = "MoMoTestStore",
+                    requestType = "onDelivery",
+                    ipnUrl = _momoConfig.IpnUrl,
+                    redirectUrl = _momoConfig.ReturnUrl,
+                    orderId = body.Code,
+                    amount = (long)totalInvoice,
+                    lang = "en",
+                    orderInfo = string.Join(',', seatsSelectSold),
+                    requestId = body.Code,
+                    extraData = "eyJ1c2VybmFtZSI6ICJtb221vIn0=",
+                };
 
-                    var rawSignature = "accessKey=" + _momoConfig.AccessKey +
-                                       "&amount=" + momoRequest.amount +
-                                       "&extraData=" + momoRequest.extraData +
-                                       "&ipnUrl=" + momoRequest.ipnUrl +
-                                       "&orderId=" + momoRequest.orderId +
-                                       "&orderInfo=" + momoRequest.orderInfo +
-                                       "&partnerCode=" + momoRequest.partnerCode +
-                                       "&redirectUrl=" + momoRequest.redirectUrl +
-                                       "&requestId=" + momoRequest.requestId +
-                                       "&requestType=" + momoRequest.requestType;
-            
-                    momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
+                var rawSignature = "accessKey=" + _momoConfig.AccessKey +
+                                   "&amount=" + momoRequest.amount +
+                                   "&extraData=" + momoRequest.extraData +
+                                   "&ipnUrl=" + momoRequest.ipnUrl +
+                                   "&orderId=" + momoRequest.orderId +
+                                   "&orderInfo=" + momoRequest.orderInfo +
+                                   "&partnerCode=" + momoRequest.partnerCode +
+                                   "&redirectUrl=" + momoRequest.redirectUrl +
+                                   "&requestId=" + momoRequest.requestId +
+                                   "&requestType=" + momoRequest.requestType;
 
-                    (bool createMomoLinkResult, string createMessage) = momoRequest.GetLink(_momoConfig.PaymentUrl);
-                    return Ok(createMessage);
-                }
+                momoRequest.signature = HashHelper.CreateSHA256(rawSignature, _momoConfig.SecretKey);
+
+                (bool createMomoLinkResult, string createMessage) = momoRequest.GetLink(_momoConfig.PaymentUrl);
+                return Ok(createMessage);
             }
 
             return Ok();

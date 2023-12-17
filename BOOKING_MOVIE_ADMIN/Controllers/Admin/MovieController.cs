@@ -124,6 +124,12 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 .ThenInclude(e => e.MovieCinemas)
                 .ThenInclude(e => e.MovieRooms)
                 .ThenInclude(e => e.MovieTimeSettings)
+                .Include(e => e.MovieActors)
+                .ThenInclude(e => e.Actor)
+                .Include(e => e.MovieDirectors)
+                .ThenInclude(e => e.Director)
+                .Include(e => e.MovieGenres)
+                .ThenInclude(e => e.Genre)
                 .OrderByDescending(e => e.Created)
                 .FirstOrDefault();
             

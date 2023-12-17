@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using BOOKING_MOVIE_ENTITY.EntitieBases;
 
 namespace BOOKING_MOVIE_ENTITY.Entities
@@ -49,5 +50,11 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual MovieTimeSetting MovieTimeSetting { get; set; }
 
         public virtual Invoice Invoice { get; set; }
+        
+        [NotMapped]
+        public virtual ComboFood ComboFood { get; set; }
+        
+        [NotMapped]
+        public virtual Food Food { get; set; }
     }
 }
