@@ -23,6 +23,48 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [Authorize(Policy = "Customer")]
+        [HttpGet]
+        public IActionResult GetMovieDateTimeSetting(
+            [FromQuery] string time, 
+            [FromQuery] long? movieId, 
+            [FromQuery] long? roomId,
+            [FromQuery] long? cinemaId,
+            [FromQuery] long? movieDateSettingId
+            )
+        {
+            var data = _movieTimeSetting
+                .GetAll()
+                .Where(e => e.Time == time)
+                .AsNoTracking();
+            
+            if (movieDateSettingId != null)
+            {
+                data = data.Where(e => e.MovieRoom.MovieCinema.MovieDateSetting.Movie.Id == movieId);
+            }
+            
+            if (roomId != null)
+            {
+                data = data.Where(e => e.MovieRoom.RoomId == roomId);
+            }
+            
+            if (cinemaId != null)
+            {
+                data = data.Where(e => e.MovieRoom.MovieCinema.CinemaId == cinemaId);
+            }
+            
+            if (movieId != null)
+            {
+                data = data.Where(e => e.MovieRoom.MovieCinema.MovieDateSetting.Id == movieDateSettingId);
+            }
+            
+            var movieTime = data
+                .OrderBy(e => e.Time)
+                .FirstOrDefault();
+            
+            return Ok(movieTime);
+        }
+        
+        [Authorize(Policy = "Customer")]
         [HttpGet("bookingTime")]
         public IActionResult GetMovieDateTimeSettings([FromQuery] string date, [FromQuery] long movieId)
         {

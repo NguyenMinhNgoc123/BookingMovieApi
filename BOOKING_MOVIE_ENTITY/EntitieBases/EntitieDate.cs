@@ -16,5 +16,8 @@ namespace BOOKING_MOVIE_ENTITY.EntitieBases
         public DateTime? Created { get; set; }
 
         public string Status { get; set; }
+        
+        [NotMapped]
+        public long? MovieId { get; set; }
     }
 }

@@ -13,22 +13,25 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
     public class SeatSoldController : movieControllerBase
     {
         private InvoicesDetailServices _invoicesDetail;
-        
+        private MovieServices _movie;
+
         public SeatSoldController(
             InvoicesDetailServices invoicesDetail,
+            MovieServices movie,
             UserServices userService) : base(userService)
         {
             _invoicesDetail = invoicesDetail;
-        }
+            _movie = movie;
+        }  
 
         [HttpGet]
-        public IActionResult GetSeatSold([FromQuery] long? movieId, [FromQuery] long? roomId, [FromQuery] long? movieTimeSettingId)
+        public IActionResult GetSeatSold([FromQuery] long? movieId, [FromQuery] long? roomId, [FromQuery] long? movieDateSettingId,  [FromQuery] string time)
         {
-            if (movieId == null || roomId == null || movieTimeSettingId == null)
+            if (movieId == null || roomId == null || movieDateSettingId == null || time == null)
             {
                 return OkList(new List<InvoiceDetails> { });
             }
-            
+
             var data = _invoicesDetail
                 .GetAll()
                 .AsNoTracking()
@@ -36,7 +39,8 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 .Where(e => e.ObjectName == OBJECT_NAME_MOVIE.SEAT)
                 .Where(e => e.MovieId == movieId)
                 .Where(e => e.RoomId == roomId)
-                .Where(e => e.MovieTimeSettingId == movieTimeSettingId)
+                .Where(e => e.MovieDateSettingId == movieDateSettingId)
+                .Where(e => e.MovieTimeSetting.Time == time)
                 .ToList();
 
             return OkList(data);

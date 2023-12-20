@@ -37,6 +37,7 @@ namespace BOOKING_MOVIE_CORE
             services.AddScoped<FoodServices>();
             services.AddScoped<ComboFoodServices>();
             services.AddScoped<ComboServices>();
+            services.AddScoped<CustomerPromotionServices>();
         }
 
     }

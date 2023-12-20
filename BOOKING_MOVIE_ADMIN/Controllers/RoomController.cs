@@ -34,7 +34,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
 
         [Authorize(Policy = "Customer")]
         [HttpGet]
-        public IActionResult GetRoom([FromQuery] long? cinemaId, [FromQuery] long? movieId, [FromQuery] string time, [FromQuery] long? movieDateSettingId)
+        public IActionResult GetRoom([FromQuery] long? cinemaId, [FromQuery] long? movieId, [FromQuery] string time, [FromQuery] long? movieDateSettingId, [FromQuery] long? movieTimeSettingId)
         {
             var movie = _movieDateSetting.GetAll().AsNoTracking();
             
@@ -63,15 +63,21 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             {
                 movieRoomIds = data.MovieCinemas.Where(e => e.CinemaId == cinemaId).FirstOrDefault().MovieRooms.Select(e => e.Id).ToList();
             }
-            
+
             var room = _movieRoom.GetAll()
-                .Where(e => movieRoomIds.Contains(e.Id))
-                .Include(e => e.Room)
+                .Where(e => movieRoomIds.Contains(e.Id));
+
+            if (time != null)
+            {
+                room = room.Where(elm => elm.MovieTimeSettings.Any(e => e.Time == time));
+            }
+            
+            var rooms = room.Include(e => e.Room)
                 .Include(e => e.MovieCinema)
                 .ThenInclude(e => e.Cinema)
                 .ToList();
             
-            return OkList(room);
+            return OkList(rooms);
         }
 
         [Authorize("User")]

@@ -38,6 +38,9 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public virtual ICollection<MovieDateSetting> MovieDateSettings { get; set; }
         
         [NotMapped]
+        public virtual ICollection<Video> Videos { get; set; }
+
+        [NotMapped]
         public virtual Photo PosterPhoto { get; set; }
         
         [NotMapped]

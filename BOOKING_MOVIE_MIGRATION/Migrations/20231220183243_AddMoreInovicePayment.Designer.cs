@@ -3,14 +3,16 @@ using System;
 using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BOOKING_MOVIE_MIGRATION.Migrations
 {
     [DbContext(typeof(movie_context))]
-    partial class movie_contextModelSnapshot : ModelSnapshot
+    [Migration("20231220183243_AddMoreInovicePayment")]
+    partial class AddMoreInovicePayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

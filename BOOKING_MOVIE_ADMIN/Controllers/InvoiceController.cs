@@ -369,6 +369,20 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
             }
 
             decimal totalAllDetailInvoice = _invoicesDetail.TotalInvoice(createInvoiceDetails);
+            if (body.PromotionId != null)
+            {
+                var promotion = _promotion.GetAll()
+                    .Where(e => e.Id == body.PromotionId)
+                    .Where(e => e.AvailableFrom <= DateTime.Now)
+                    .Where(e => e.AvailableTo >= DateTime.Now)
+                    .FirstOrDefault();
+
+                if (promotion != null)
+                {
+                    body.DiscountValue = promotion.DiscountValue;
+                    body.DiscountUnit = promotion.DiscountUnit;
+                }
+            }
             decimal totalInvoice = _invoice.CalculateTotal(totalAllDetailInvoice, body.DiscountValue ?? 0, body.DiscountUnit);
 
             var invoicePaymentMethodIds = body.InvoicePayment.Select(e => e.InvoiceMethodId).ToList();
@@ -416,7 +430,11 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                     Total = e.Total,
                     Created = DateTime.Now,
                     CreatedBy = CurrentUserEmail,
-                    InvoiceId = createInvoice.Id
+                    InvoiceId = createInvoice.Id,
+                    NameAtm = e.NameAtm,
+                    NumberAtm = e.NumberAtm,
+                    NameShortCutAtm = e.NameShortCutAtm,
+                    NotePayment = e.NotePayment
                 }).ToList();
 
                 _invoicePayment.AddRange(createInvoicePayment);

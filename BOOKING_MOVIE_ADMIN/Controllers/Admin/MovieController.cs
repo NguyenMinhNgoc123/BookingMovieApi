@@ -194,6 +194,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 }
             }
             
+            
             using (var transaction = _unitOfWork.BeginTransaction())
             {
                 var createMovie = new Movie()
@@ -259,10 +260,28 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                     }).ToList();
                 }
                 
+                var movieVideo = new List<Video>();
+                if (body.Videos?.Count > 0)
+                {
+                    var objectId = createMovie.Id;
+                    movieVideo = body.Videos.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.ObjectId = objectId;
+                        e.Type = "MOVIE";
+                        e.Name = e.Name;
+                        e.url = e.url;
+                        e.Status = OBJECT_STATUS.ENABLE;
+                        
+                        return e;
+                    }).ToList();
+                }
+                
                 _movieActor.AddRange(movieActors);
                 _movieGenres.AddRange(movieCategories);
                 _movieDirector.AddRange(movieDirector);
-                
+                _video.AddRange(movieVideo);
                 _movieDateSetting.CreateMovieDateSettings(body.MovieDateSettings.ToList(), createMovie.Id, CurrentUserEmail);
                 
                 transaction.Commit();
