@@ -57,6 +57,37 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             return Ok();
         }
         
+        [Authorize(Policy = "User")]
+        [HttpPut("{id}")]
+        public IActionResult CreateCinema([FromRoute] long id, [FromBody] Cinema body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var cinema = _cinema.GetAll()
+                .Where(e => e.Id == id)
+                .FirstOrDefault();
+
+            if (cinema == null)
+            {
+                return BadRequest("ROOM_NOT_EXIST");
+            }
+
+            cinema.Name = body.Name;
+            cinema.Updated = DateTime.Now;
+            cinema.UpdatedBy = CurrentUserEmail;
+
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _cinema.Update(cinema);
+                transaction.Commit();
+            }
+
+            return Ok();
+        }
+        
         [HttpGet("{id}")]
         [Authorize(Policy = "User")]
         public IActionResult GetCinemaCustomer([FromRoute] long id)

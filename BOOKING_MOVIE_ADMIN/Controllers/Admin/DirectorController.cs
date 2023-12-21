@@ -16,15 +16,18 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
     {
         private readonly DirectorServices _director;
         private readonly UnitOfWork _unitOfWork;
+        private readonly MovieDirectorServices _movieDirector;
 
         public DirectorController(
             DirectorServices director,
             UserServices userService,
-            UnitOfWork unitOfWork
+            UnitOfWork unitOfWork,
+            MovieDirectorServices movieDirector
         ) : base(userService)
         {
             _unitOfWork = unitOfWork;
             _director = director;
+            _movieDirector = movieDirector;
         }
 
         [Authorize(Policy = "User")]
@@ -127,6 +130,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             }
             
             return Ok();
+        }
+        
+        [Authorize(Policy = "User")]
+        [HttpGet("Movie/{id}")]
+        public IActionResult GetDirectorMovie([FromRoute] long id)
+        {
+            var movieDirectors = _movieDirector.GetAll().Where(e => e.MovieId == id).ToList();
+            var directorIds = movieDirectors.Select(e => e.DirectorId).ToList();
+            var data = _director.GetAll().AsNoTracking().Where(e => directorIds.Contains(e.Id)).ToList();
+
+            return OkList(data);
         }
     }
 }

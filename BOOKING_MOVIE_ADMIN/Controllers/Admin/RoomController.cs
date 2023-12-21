@@ -88,12 +88,13 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 return BadRequest("ROOM_NOT_EXIST");
             }
 
-            body.Updated = DateTime.Now;
-            body.UpdatedBy = CurrentUserEmail;
+            room.Updated = DateTime.Now;
+            room.UpdatedBy = CurrentUserEmail;
+            room.Name = body.Name;
 
             using (var transaction = _unitOfWork.BeginTransaction())
             {
-                _room.Update(body);
+                _room.Update(room);
                 transaction.Commit();
             }
 

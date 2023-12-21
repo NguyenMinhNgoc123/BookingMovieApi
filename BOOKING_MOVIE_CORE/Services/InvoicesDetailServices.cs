@@ -69,6 +69,7 @@ namespace BOOKING_MOVIE_CORE.Services
                 .Select(e => e.MovieTimeSettingId).ToList();
 
             var checkSeatInvoiceDetail = GetAll()
+                .Where(e => e.Invoice.Status == OBJECT_STATUS.ENABLE)
                 .Where(e => e.ObjectName == OBJECT_NAME_MOVIE.SEAT)
                 .Where(e => seatMovie.Contains(e.ObjectCode))
                 .Where(e => movieTimeSettingIds.Contains(e.MovieTimeSettingId))

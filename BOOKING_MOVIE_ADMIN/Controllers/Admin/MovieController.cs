@@ -421,5 +421,159 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
 
             return Ok();
         }
+        
+        
+        [Authorize(Policy = "User")]
+        [HttpPut("{id}")]
+        public IActionResult UpdateMovieAllUser([FromRoute] long id, [FromBody] Movie body)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var movie = _movie.GetAll().Where(e => e.Id == id).FirstOrDefault();
+            if (movie == null)
+            {
+                return BadRequest("MOVIE_NOT_EXIST");
+            }
+            
+            if (body.MovieActors.Count > 0)
+            {
+                var movieActorIds = body.MovieActors.Select(e => e.ActorId).ToList();
+                var movieActors = _actor.GetAll().Where(e => movieActorIds.Contains(e.Id)).ToList();
+
+                if (movieActorIds.Count() != movieActors.Count)
+                {
+                    return BadRequest("ACTOR_NOT_EXIST");
+                }
+            }
+            
+            if (body.MovieGenres.Count > 0)
+            {
+                var movieCategoryIds = body.MovieGenres.Select(e => e.GenreId).ToList();
+                var movieCategories = _genre.GetAll().Where(e => movieCategoryIds.Contains(e.Id)).ToList();
+
+                if (movieCategoryIds.Count() != movieCategories.Count)
+                {
+                    return BadRequest("CATEGORY_NOT_EXIST");
+                }
+            }
+            
+            if (body.MovieDirectors.Count > 0)
+            {
+                var movieDirectorIds = body.MovieDirectors.Select(e => e.DirectorId).ToList();
+                var movieDirector = _genre.GetAll().Where(e => movieDirectorIds.Contains(e.Id)).ToList();
+
+                if (movieDirectorIds.Count() != movieDirector.Count)
+                {
+                    return BadRequest("MOVIE_ACTOR_NOT_EXIST");
+                }
+            }
+            
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                var createMovie = new Movie()
+                {
+                    Id = movie.Id,
+                    Created = DateTime.Now,
+                    CreatedBy = CurrentUserEmail,
+                    Status = OBJECT_STATUS.ENABLE,
+                    Name = body.Name,
+                    Overview = body.Overview,
+                    MovieStatus = body.StartDate <= DateTime.Now && body.EndDate >= DateTime.Now
+                        ? MOVIE_STATUS.PREMIERING
+                        : body.StartDate >= DateTime.Now
+                            ? MOVIE_STATUS.COMING_SOON
+                            : MOVIE_STATUS.EXPIRED,
+                    YearOfRelease = body.YearOfRelease,
+                    Time = body.Time,
+                    Country = body.Country,
+                    Rate = body.Rate,
+                    Description = body.Description,
+                    ReleaseDate = body.ReleaseDate,
+                    PremiereDate = body.PremiereDate,
+                    StartDate = body.StartDate,
+                    EndDate = body.EndDate
+                };
+                
+                _movie.Update(createMovie);
+
+                var movieGenre = _movieGenres.GetAll().Where(e => e.MovieId == id).ToList();
+                var oldMovieDirector = _movieDirector.GetAll().Where(e => e.MovieId == id).ToList();
+                var movieActor = _movieActor.GetAll().Where(e => e.MovieId == id).ToList();
+                
+                foreach (var e in movieGenre)
+                {
+                    e.Status = OBJECT_STATUS.DELETED;
+                    e.Updated = DateTime.Now;
+                    e.UpdatedBy = CurrentUserEmail;
+                }
+                foreach (var e in oldMovieDirector)
+                {
+                    e.Status = OBJECT_STATUS.DELETED;
+                    e.Updated = DateTime.Now;
+                    e.UpdatedBy = CurrentUserEmail;
+                }
+                foreach (var e in movieActor)
+                {
+                    e.Status = OBJECT_STATUS.DELETED;
+                    e.Updated = DateTime.Now;
+                    e.UpdatedBy = CurrentUserEmail;
+                }
+
+                _movieGenres.UpdateRange(movieGenre);
+                _movieDirector.UpdateRange(oldMovieDirector);
+                _movieActor.UpdateRange(movieActor);
+
+                var movieActors = new List<MovieActor>();
+                if (body.MovieActors.Count > 0)
+                {
+                    movieActors = body.MovieActors.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.MovieId = createMovie.Id;
+                        return e;
+                    }).ToList();
+                }
+
+                var movieCategories = new List<MovieGenres>();
+                if (body.MovieGenres.Count > 0) 
+                {
+                    movieCategories = body.MovieGenres.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.MovieId = createMovie.Id;
+
+                        return e;
+                    }).ToList();
+                }
+            
+                var movieDirector = new List<MovieDirector>();
+                if (body.MovieGenres.Count > 0) 
+                {
+                    movieDirector = body.MovieDirectors.Select(e =>
+                    {
+                        e.Created = DateTime.Now;
+                        e.CreatedBy = CurrentUserEmail;
+                        e.MovieId = createMovie.Id;
+
+                        return e;
+                    }).ToList();
+                }
+                
+                _movieActor.AddRange(movieActors);
+                _movieGenres.AddRange(movieCategories);
+                _movieDirector.AddRange(movieDirector);
+                _movieDateSetting.CreateMovieDateSettings(body.MovieDateSettings.ToList(), createMovie.Id, CurrentUserEmail);
+                
+                transaction.Commit();
+            }
+            
+            return Ok();
+        }
     }
 }

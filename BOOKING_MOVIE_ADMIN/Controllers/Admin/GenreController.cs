@@ -16,14 +16,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
     {
         private readonly GenreServices _genre;
         private readonly UnitOfWork _unitOfWork;
+        private readonly MovieGenresServices _movieGenres;
 
         public GenreController(
             GenreServices genre,
             UnitOfWork unitOfWork,
+            MovieGenresServices movieGenres,
             UserServices userService) : base(userService)
         {
             _genre = genre;
             _unitOfWork = unitOfWork;
+            _movieGenres = movieGenres;
         }
 
         [Authorize(Policy = "User")]
@@ -126,6 +129,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             }
             
             return Ok();
+        }
+        
+        [Authorize(Policy = "User")]
+        [HttpGet("Movie/{id}")]
+        public IActionResult GetGenreMovie([FromRoute] long id)
+        {
+            var movieGenre = _movieGenres.GetAll().Where(e => e.MovieId == id).ToList();
+            var genreIds = movieGenre.Select(e => e.GenreId).ToList();
+            var data = _genre.GetAll().AsNoTracking().Where(e => genreIds.Contains(e.Id)).ToList();
+
+            return OkList(data);
         }
     }
 }

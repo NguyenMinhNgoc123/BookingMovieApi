@@ -438,7 +438,12 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 }).ToList();
 
                 _invoicePayment.AddRange(createInvoicePayment);
-
+                
+                if (createInvoice.CustomerId != null)
+                {
+                    _invoice.UpdateGiftFollowRevenue(createInvoice.CustomerId.Value, CurrentUserEmail);
+                }
+                
                 transaction.Commit();
             }
 
