@@ -84,7 +84,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
         }
         
         [Authorize(Policy = "Customer")]
-        [HttpGet("/return/{code}")]
+        [HttpGet("Return/{code}")]
         public IActionResult ReturnInvoicePaymentMomo([FromRoute] string code)
         {
             var data = _invoice.GetAll()
