@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using BOOKING_MOVIE_ADMIN.Reponse;
 using BOOKING_MOVIE_ADMIN.Values;
 using BOOKING_MOVIE_CORE.Services;
 using BOOKING_MOVIE_ENTITY;
+using BOOKING_MOVIE_ENTITY.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -102,6 +104,38 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 .FirstOrDefault();
 
             return Ok(data);
+        }
+        
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "User")]
+        public IActionResult DeleteInvoice([FromRoute] long id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var invoice = _invoice
+                .GetAll()
+                .Where(e => e.Id == id)
+                .FirstOrDefault();
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            invoice.Status = OBJECT_STATUS.DELETED;
+            invoice.Updated = DateTime.Now;
+            invoice.UpdatedBy = CurrentUserEmail;
+            
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                _invoice.Update(invoice);
+                transaction.Commit();
+            }
+            
+            return Ok(invoice);
         }
     }
 }

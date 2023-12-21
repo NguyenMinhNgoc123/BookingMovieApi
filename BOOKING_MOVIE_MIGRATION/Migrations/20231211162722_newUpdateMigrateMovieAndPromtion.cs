@@ -24,7 +24,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
             
             migrationBuilder.AddColumn<decimal>(
                 name: "SpendPrice",
-                table: "Promotion"
+                table: "Promotion",
+                nullable: false
             );
         }
 

@@ -13,5 +13,7 @@ namespace BOOKING_MOVIE_ENTITY.Entities
         public DateTime? AvailableFrom { get; set; }
 
         public DateTime? AvailableTo { get; set; }
+        
+        public decimal spendPrice { get; set; }
     }
 }

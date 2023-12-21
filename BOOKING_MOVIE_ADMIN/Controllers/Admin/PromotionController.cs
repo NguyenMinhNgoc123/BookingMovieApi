@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BOOKING_MOVIE_ADMIN.Reponse;
 using BOOKING_MOVIE_CORE.Services;
@@ -16,14 +17,17 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
     {
         private readonly PromotionServices _promotion;
         private readonly UnitOfWork _unitOfWork;
+        private readonly CustomerPromotionServices _customerPromotion;
 
         public PromotionController(
             PromotionServices promotionServices,
             UnitOfWork unitOfWork,
+            CustomerPromotionServices customerPromotion,
             UserServices userService) : base(userService)
         {
             _unitOfWork = unitOfWork;
             _promotion = promotionServices;
+            _customerPromotion = customerPromotion;
         }
 
         [Authorize(Policy = "User")]
@@ -127,6 +131,25 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
             }
 
             return Ok();
+        }
+        
+        [Authorize(Policy = "User")]
+        [HttpGet("Customer/{id}")]
+        public IActionResult GetPromotionWasGift([FromRoute] long id)
+        {
+            var promotionIds = _customerPromotion
+                .GetAll()
+                .Where(e => e.CustomerId == id)
+                .Select(e => e.PromotionId)
+                .ToList();
+            
+            var data = _promotion
+                .GetAll()
+                .AsNoTracking()
+                .Where(e => promotionIds.Contains(e.Id))
+                .ToList();
+
+            return OkList(data);
         }
     }
 }

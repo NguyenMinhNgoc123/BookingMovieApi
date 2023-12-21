@@ -14,8 +14,16 @@ namespace BOOKING_MOVIE_CORE.Services
             decimal totalInvoice = 0;
             if (discountUnit != null)
             {
-                decimal discountTotal = totalAllDetailInvoice / 100 * discountValue;
-                totalInvoice = totalAllDetailInvoice - discountTotal;
+                decimal discountTotal = 0;
+                if (discountUnit == "PERCENT")
+                {
+                    discountTotal = totalAllDetailInvoice / 100 * discountValue;
+                    totalInvoice = totalAllDetailInvoice >= discountTotal ? totalAllDetailInvoice - discountTotal : 0;
+                }
+                else
+                {
+                    totalInvoice = totalAllDetailInvoice >= discountValue ? totalAllDetailInvoice - discountValue : 0;
+                }
             }
 
             return totalInvoice;
