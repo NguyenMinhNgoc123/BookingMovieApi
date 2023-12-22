@@ -112,6 +112,7 @@ namespace BOOKING_MOVIE_ADMIN.Controllers.Admin
                 return BadRequest("USER_NOT_EXIST");
             }
 
+            body.Id = userExist.Id;
             body.Email = userExist.Email;
             body.CreatedBy = "";
             body.Status = OBJECT_STATUS.ENABLE;
