@@ -441,7 +441,13 @@ namespace BOOKING_MOVIE_ADMIN.Controllers
                 
                 if (createInvoice.CustomerId != null)
                 {
-                    _invoice.UpdateGiftFollowRevenue(createInvoice.CustomerId.Value, CurrentUserEmail);
+                    try
+                    {
+                        _invoice.UpdateGiftFollowRevenue(createInvoice.CustomerId.Value, CurrentUserEmail);
+                    }
+                    catch (Exception e)
+                    {
+                    }
                 }
                 
                 transaction.Commit();

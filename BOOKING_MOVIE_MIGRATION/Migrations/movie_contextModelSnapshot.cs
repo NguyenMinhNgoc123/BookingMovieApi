@@ -378,6 +378,14 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
 
                     b.Property<long>("InvoiceMethodId");
 
+                    b.Property<string>("NameAtm");
+
+                    b.Property<string>("NameShortCutAtm");
+
+                    b.Property<string>("NotePayment");
+
+                    b.Property<string>("NumberAtm");
+
                     b.Property<string>("Status");
 
                     b.Property<decimal?>("Total");
@@ -708,6 +716,8 @@ namespace BOOKING_MOVIE_MIGRATION.Migrations
                     b.Property<DateTime?>("Updated");
 
                     b.Property<string>("UpdatedBy");
+
+                    b.Property<decimal>("spendPrice");
 
                     b.HasKey("Id");
 
